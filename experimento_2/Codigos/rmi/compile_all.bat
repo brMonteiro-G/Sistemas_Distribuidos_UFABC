@@ -1,0 +1,1 @@
+javac compute/*.java engine/*.java client/*.java
