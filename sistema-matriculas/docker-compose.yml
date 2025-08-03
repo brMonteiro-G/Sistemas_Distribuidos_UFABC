@@ -4,39 +4,42 @@ services:
   zookeeper1:
     build:
       context: .
-      image: Dockerfile
     hostname: zookeeper1
     container_name: zookeeper1
     ports:
       - "2181:2181"   # Client port
       - "2888:2888"   # Peer communication
       - "3888:3888"   # Leader election
+      - "8080:8080"
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+    command: ["sh", "-c", "sleep infinity"]
 
   zookeeper2:
     build:
       context: .
-      image: Dockerfile
     container_name: zookeeper2
     ports:
       - "2182:2181"
       - "2889:2888"
       - "3889:3888"
+      - "8081:8080"
     environment:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+    command: ["sh", "-c", "sleep infinity"]
 
   zookeeper3:
     build:
       context: .
-      image: Dockerfile
     container_name: zookeeper3
     ports:
       - "2183:2181"
       - "2890:2888"
       - "3890:3888"
+      - "8082:8080"
     environment:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+    command: ["sh", "-c", "sleep infinity"]
