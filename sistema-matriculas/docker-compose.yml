@@ -1,5 +1,9 @@
 version: '3.8'
 
+networks:
+  zknet:
+    driver: bridge
+
 services:
   zookeeper1:
     build:
@@ -15,6 +19,8 @@ services:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
     command: ["sh", "-c", "sleep infinity"]
+    networks:
+      - zknet
 
   zookeeper2:
     build:
@@ -29,6 +35,8 @@ services:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
     command: ["sh", "-c", "sleep infinity"]
+    networks:
+      - zknet
 
   zookeeper3:
     build:
@@ -43,3 +51,5 @@ services:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
     command: ["sh", "-c", "sleep infinity"]
+    networks:
+      - zknet

@@ -10,10 +10,14 @@ RUN apt-get update && apt-get install -y \
     tar \
     bash \
     maven \
+    netcat \
  && curl -sSL https://dlcdn.apache.org/zookeeper/zookeeper-${ZK_VERSION}/apache-zookeeper-${ZK_VERSION}-bin.tar.gz \
     | tar -xz -C /opt \
  && mv /opt/apache-zookeeper-${ZK_VERSION}-bin ${ZK_HOME} \
  && rm -rf /var/lib/apt/lists/*
+
+RUN ln -sf /bin/bash /bin/sh
+
 
 # Set working directory
 WORKDIR /app
