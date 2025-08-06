@@ -7,19 +7,19 @@ import org.apache.zookeeper.Watcher;
 
 public class Locks implements Watcher {
     public static void exec(String args[]) {
-        var lock = new Lock(args[1],"/lock",Long.valueOf(args[2]));
-        try{
+        var lock = new Lock(args[1], "/lock", Long.valueOf(args[2]));
+        try {
             var success = lock.lock();
             if (success) {
                 lock.compute();
             } else {
-                while(true) {
+                while (true) {
                     //Waiting for a notification
                 }
             }
-        } catch (KeeperException e){
+        } catch (KeeperException e) {
             e.printStackTrace();
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
