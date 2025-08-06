@@ -3,6 +3,9 @@ version: '3.8'
 networks:
   zknet:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16   # 👈 custom subnet for static IPs
 
 services:
   zookeeper1:
@@ -10,46 +13,51 @@ services:
       context: .
     hostname: zookeeper1
     container_name: zookeeper1
+    networks:
+      zknet:
+        ipv4_address: 172.28.0.11
     ports:
-      - "2181:2181"   # Client port
-      - "2888:2888"   # Peer communication
-      - "3888:3888"   # Leader election
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
       - "8090:8090"
+
     environment:
       ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
     command: ["sh", "-c", "sleep infinity"]
-    networks:
-      - zknet
 
   zookeeper2:
     build:
       context: .
     container_name: zookeeper2
+    networks:
+      zknet:
+        ipv4_address: 172.28.0.12
     ports:
       - "2182:2181"
       - "2889:2888"
       - "3889:3888"
-      - "8081:8081"
+      - "8083:8090"
+
     environment:
       ZOO_MY_ID: 2
-      ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
     command: ["sh", "-c", "sleep infinity"]
-    networks:
-      - zknet
 
   zookeeper3:
     build:
       context: .
     container_name: zookeeper3
+    networks:
+      zknet:
+        ipv4_address: 172.28.0.13
     ports:
       - "2183:2181"
       - "2890:2888"
       - "3890:3888"
-      - "8082:8082"
+      - "8082:8090"
     environment:
       ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=zookeeper1:2888:3888 server.2=zookeeper2:2888:3888 server.3=zookeeper3:2888:3888
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
     command: ["sh", "-c", "sleep infinity"]
-    networks:
-      - zknet

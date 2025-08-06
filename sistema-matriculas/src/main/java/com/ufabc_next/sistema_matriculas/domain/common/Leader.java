@@ -124,7 +124,7 @@ public class Leader extends SyncPrimitive {
     public void compute() {
         System.out.println("I will die after 10 seconds!");
         try {
-            new Thread().sleep(10000);
+            new Thread().sleep(90000);
             System.out.println("Process "+id+" died!");
         } catch (InterruptedException e) {
             e.printStackTrace();

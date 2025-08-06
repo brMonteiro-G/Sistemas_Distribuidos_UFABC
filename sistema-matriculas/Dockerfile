@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
 RUN ln -sf /bin/bash /bin/sh
 
 RUN mv ${ZK_HOME}/conf/zoo_sample.cfg ${ZK_HOME}/conf/zoo.cfg
+RUN echo "server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888" > zoo.cfg
 
 # Set working directory
 WORKDIR /app
@@ -32,4 +33,4 @@ ENV CP=.:${ZK_HOME}/lib/zookeeper-${ZK_VERSION}.jar:${ZK_HOME}/lib/zookeeper-jut
 
 CMD [ "sh", "-c", "sleep", "infinity"]
 # Default command (infinite sleep for debugging)
-ENTRYPOINT ["sh", "build_and_run.sh"]
+#ENTRYPOINT ["sh", "build_and_run.sh"]
