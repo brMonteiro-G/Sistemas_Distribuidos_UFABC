@@ -1,16 +1,25 @@
 package com.ufabc_next.sistema_matriculas.controller;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import static com.ufabc_next.sistema_matriculas.core.barriers.BarrierService.barrierCreation;
 import static com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection.leaderElection;
 
 
 @RestController
-@RequestMapping("/leader")
+@RequestMapping("/domain")
 public class DomainController {
 
-        @PostMapping("/elect")
-        public void electLeader(@RequestBody String[] args) {
-            leaderElection(args);
-        }
+    @PostMapping("/elect")
+    public void electLeader(@RequestBody String[] args) {
+        leaderElection(args);
+    }
+
+    @PostMapping("/barrier")
+    public void createBarrier(@RequestBody String[] args) {
+        barrierCreation(args);
+    }
 }
