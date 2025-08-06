@@ -1,5 +1,10 @@
 package com.ufabc_next.sistema_matriculas.core.queues;
 
+import com.ufabc_next.sistema_matriculas.domain.common.Queue;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+
 public class Queues implements Watcher {
       public static void queueTest(String args[]) {
         Queue q = new Queue(args[1], "/app3");

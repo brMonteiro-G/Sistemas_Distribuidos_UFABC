@@ -1,91 +1,100 @@
-/**
-     * Producer-Consumer queue
-     */
-    static public class Queue extends SyncPrimitive {
+package com.ufabc_next.sistema_matriculas.domain.common;
 
-        /**
-         * Constructor of producer-consumer queue
-         *
-         * @param address
-         * @param name
-         */
-        Queue(String address, String name) {
-            super(address);
-            this.root = name;
-            // Create ZK node name
-            if (zk != null) {
-                try {
-                    Stat s = zk.exists(root, false);
-                    if (s == null) {
-                        zk.create(root, new byte[0], Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-                    }
-                } catch (KeeperException e) {
-                    System.out.println("Keeper exception when instantiating queue: " + e.toString());
-                } catch (InterruptedException e) {
-                    System.out.println("Interrupted exception");
+import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
+
+import java.nio.ByteBuffer;
+import java.util.List;
+
+/**
+ * Producer-Consumer queue
+ */
+public class Queue extends SyncPrimitive {
+
+    /**
+     * Constructor of producer-consumer queue
+     *
+     * @param address
+     * @param name
+     */
+    public Queue(String address, String name) {
+        super(address);
+        this.root = name;
+        // Create ZK node name
+        if (zk != null) {
+            try {
+                Stat s = zk.exists(root, false);
+                if (s == null) {
+                    zk.create(root, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 }
+            } catch (KeeperException e) {
+                System.out.println("Keeper exception when instantiating queue: " + e.toString());
+            } catch (InterruptedException e) {
+                System.out.println("Interrupted exception");
             }
         }
+    }
 
-        /**
-         * Add element to the queue.
-         *
-         * @param i
-         * @return
-         */
+    /**
+     * Add element to the queue.
+     *
+     * @param i
+     * @return
+     */
 
-        boolean produce(int i) throws KeeperException, InterruptedException{
-            ByteBuffer b = ByteBuffer.allocate(4);
-            byte[] value;
+    public boolean produce(int i) throws KeeperException, InterruptedException {
+        ByteBuffer b = ByteBuffer.allocate(4);
+        byte[] value;
 
-            // Add child with value i
-            b.putInt(i);
-            value = b.array();
-            zk.create(root + "/element", value, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+        // Add child with value i
+        b.putInt(i);
+        value = b.array();
+        zk.create(root + "/element", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
 
-            return true;
-        }
+        return true;
+    }
 
 
-        /**
-         * Remove first element from the queue.
-         *
-         * @return
-         * @throws KeeperException
-         * @throws InterruptedException
-         */
-        int consume() throws KeeperException, InterruptedException{
-            int retvalue = -1;
-            Stat stat = null;
+    /**
+     * Remove first element from the queue.
+     *
+     * @return
+     * @throws KeeperException
+     * @throws InterruptedException
+     */
+    public int consume() throws KeeperException, InterruptedException {
+        int retvalue = -1;
+        Stat stat = null;
 
-            // Get the first element available
-            while (true) {
-                synchronized (mutex) {
-                    List<String> list = zk.getChildren(root, true);
-                    if (list.size() == 0) {
-                        System.out.println("Going to wait");
-                        mutex.wait();
-                    } else {
-                        Integer min = Integer.valueOf(list.get(0).substring(7));
-                        System.out.println("List: "+list.toString());
-                        String minString = list.get(0);
-                        for(String s : list){
-                            Integer tempValue = Integer.valueOf(s.substring(7));
-                            //System.out.println("Temp value: " + tempValue);
-                            if(tempValue < min) { 
-                            	min = tempValue;
-                            	minString = s;
-                            }
+        // Get the first element available
+        while (true) {
+            synchronized (mutex) {
+                List<String> list = zk.getChildren(root, true);
+                if (list.size() == 0) {
+                    System.out.println("Going to wait");
+                    mutex.wait();
+                } else {
+                    Integer min = Integer.valueOf(list.get(0).substring(7));
+                    System.out.println("List: " + list.toString());
+                    String minString = list.get(0);
+                    for (String s : list) {
+                        Integer tempValue = Integer.valueOf(s.substring(7));
+                        //System.out.println("Temp value: " + tempValue);
+                        if (tempValue < min) {
+                            min = tempValue;
+                            minString = s;
                         }
-                       System.out.println("Temporary value: " + root +"/"+ minString);
-                        byte[] b = zk.getData(root +"/"+ minString,false, stat);
-                        //System.out.println("b: " + Arrays.toString(b)); 	
-                        zk.delete(root +"/"+ minString, 0);
-                        ByteBuffer buffer = ByteBuffer.wrap(b);
-                        retvalue = buffer.getInt();
-                        return retvalue;
                     }
+                    System.out.println("Temporary value: " + root + "/" + minString);
+                    byte[] b = zk.getData(root + "/" + minString, false, stat);
+                    //System.out.println("b: " + Arrays.toString(b));
+                    zk.delete(root + "/" + minString, 0);
+                    ByteBuffer buffer = ByteBuffer.wrap(b);
+                    retvalue = buffer.getInt();
+                    return retvalue;
                 }
             }
         }
     }
+}
