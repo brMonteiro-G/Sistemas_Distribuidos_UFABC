@@ -17,6 +17,6 @@ public class DomainController {
 
         @PostMapping("/elect")
         public void QueuesTest(@RequestBody String[] args) {
-            queueTest(args)
+            queueTest(args);
         }
 }
