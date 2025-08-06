@@ -15,8 +15,8 @@ public class DomainController {
             leaderElection(args);
         }
 
-        @PostMapping("/elect")
-        public void QueuesTest(@RequestBody String[] args) {
-            queueTest(args);
-        }
+//        @PostMapping("/queue")
+//        public void QueuesTest(@RequestBody String[] args) {
+//            queueTest(args);
+//        }
 }
