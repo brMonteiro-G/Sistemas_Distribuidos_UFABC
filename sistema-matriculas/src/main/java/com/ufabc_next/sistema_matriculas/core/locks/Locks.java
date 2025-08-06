@@ -1,24 +1,31 @@
 package com.ufabc_next.sistema_matriculas.core.locks;
 
-import java.util.concurrent.locks.Lock;
+import com.ufabc_next.sistema_matriculas.domain.common.Lock;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 
-public class Locks {
-
-  public static void exec(String args[]) {
-    	var lock = new Lock(args[1],"/lock",Long.valueOf(args[2]));
+public class Locks implements Watcher {
+    public static void exec(String args[]) {
+        var lock = new Lock(args[1],"/lock",Long.valueOf(args[2]));
         try{
-        	var success = lock.lock();
-        	if (success) {
-        		lock.compute();
-        	} else {
-        		while(true) {
-        			//Waiting for a notification
-        		}
+            var success = lock.lock();
+            if (success) {
+                lock.compute();
+            } else {
+                while(true) {
+                    //Waiting for a notification
+                }
             }
         } catch (KeeperException e){
-        	e.printStackTrace();
+            e.printStackTrace();
         } catch (InterruptedException e){
-        	e.printStackTrace();
+            e.printStackTrace();
         }
+    }
+
+    @Override
+    public void process(WatchedEvent watchedEvent) {
+
     }
 }

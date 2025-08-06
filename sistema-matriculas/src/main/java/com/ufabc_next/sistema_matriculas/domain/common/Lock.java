@@ -35,7 +35,7 @@ public class Lock extends SyncPrimitive {
         }
     }
 
-    boolean lock() throws KeeperException, InterruptedException {
+    public boolean lock() throws KeeperException, InterruptedException {
         //Step 1
         pathName = zk.create(root + "/lock-", new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
         System.out.println("My path name is: " + pathName);
@@ -108,7 +108,7 @@ public class Lock extends SyncPrimitive {
         }
     }
 
-    void compute() {
+    public void compute() {
         System.out.println("Lock acquired!");
         try {
             new Thread().sleep(wait);
