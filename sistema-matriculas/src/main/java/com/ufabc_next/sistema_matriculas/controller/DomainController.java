@@ -13,7 +13,7 @@ public class DomainController {
 
         @PostMapping("/elect")
         public void electLeader(@RequestBody String[] args) {
-            leaderElection(args);
+            leaderElection();
         }
 
         @PostMapping("/queue")
