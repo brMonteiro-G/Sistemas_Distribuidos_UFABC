@@ -21,11 +21,12 @@ services:
       - "2888:2888"
       - "3888:3888"
       - "8090:8090"
-
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
-    command: ["sh", "-c", "sleep infinity"]
+    command: [ "sh", "-c", "sleep infinity" ]
 
   zookeeper2:
     build:
@@ -39,11 +40,12 @@ services:
       - "2889:2888"
       - "3889:3888"
       - "8083:8090"
-
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
-    command: ["sh", "-c", "sleep infinity"]
+    command: [ "sh", "-c", "sleep infinity" ]
 
   zookeeper3:
     build:
@@ -57,7 +59,10 @@ services:
       - "2890:2888"
       - "3890:3888"
       - "8082:8090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
-    command: ["sh", "-c", "sleep infinity"]
+    command: [ "sh", "-c", "sleep infinity" ]
+  
