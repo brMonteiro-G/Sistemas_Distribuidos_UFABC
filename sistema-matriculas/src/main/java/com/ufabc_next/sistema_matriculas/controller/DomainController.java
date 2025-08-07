@@ -8,7 +8,7 @@ import static com.ufabc_next.sistema_matriculas.core.queues.Queues.queueTest;
 
 
 @RestController
-@RequestMapping("/leader")
+@RequestMapping("/domain")
 public class DomainController {
 
         @PostMapping("/elect")
@@ -16,10 +16,10 @@ public class DomainController {
             leaderElection(args);
         }
 
-//        @PostMapping("/queue")
-//        public void QueuesTest(@RequestBody String[] args) {
-//            queueTest(args);
-//        }
+        @PostMapping("/queue")
+        public void QueuesTest(@RequestBody String[] args) {
+            queueTest(args);
+        }
 
         @PostMapping("/lock")
         public void lock(@RequestBody String[] args) {
