@@ -4,15 +4,20 @@ import com.ufabc_next.sistema_matriculas.domain.common.Queue;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.springframework.beans.factory.annotation.Value;
 
 public class Queues implements Watcher {
+    @Value("value.addresses:localhost:2181")
+    String address;
+
     public static void queueTest(String[] args) {
+        String address = args[0];
         String queueName = args[1];
         int queueSize = Integer.parseInt(args[2]);
         String queueOperation = args[3];
 
 
-        Queue q = new Queue(queueName, "/app3");
+        Queue q = new Queue(address, queueName);
 
         System.out.println("Input: " + queueName);
         int i;
