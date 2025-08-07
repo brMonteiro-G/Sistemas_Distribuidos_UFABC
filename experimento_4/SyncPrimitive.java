@@ -228,7 +228,7 @@ public class SyncPrimitive implements Watcher {
 
     static public class Lock extends SyncPrimitive {
     	long wait;
-	String pathName;
+	    String pathName;
     	 /**
          * Constructor of lock
          *
@@ -262,9 +262,9 @@ public class SyncPrimitive implements Watcher {
             return testMin();
         }
         
-	boolean testMin() throws KeeperException, InterruptedException{
-	    while (true) {
-		 Integer suffix = Integer.valueOf(pathName.substring(12));
+	    boolean testMin() throws KeeperException, InterruptedException{
+	        while (true) {
+		        Integer suffix = Integer.valueOf(pathName.substring(12));
 	         //Step 2 
             	 List<String> list = zk.getChildren(root, false);
                  Integer min = Integer.valueOf(list.get(0).substring(5));
@@ -278,36 +278,36 @@ public class SyncPrimitive implements Watcher {
                  		minString = s;
                  	}
                  }
-                System.out.println("Suffix: "+suffix+", min: "+min);
-           	//Step 3
-             	if (suffix.equals(min)) {
-            		System.out.println("Lock acquired for "+minString+"!");
-            		return true;
-            	}
-            	//Step 4
-            	//Wait for the removal of the next lowest sequence number
-            	Integer max = min;
-            	String maxString = minString;
-            	for(String s : list){
-            		Integer tempValue = Integer.valueOf(s.substring(5));
-            		//System.out.println("Temp value: " + tempValue);
-            		if(tempValue > max && tempValue < suffix)  {
-            			max = tempValue;
-            			maxString = s;
-            		}
-            	}
+                    System.out.println("Suffix: "+suffix+", min: "+min);
+                //Step 3
+                    if (suffix.equals(min)) {
+                        System.out.println("Lock acquired for "+minString+"!");
+                        return true;
+                    }
+                    //Step 4
+                    //Wait for the removal of the next lowest sequence number
+                    Integer max = min;
+                    String maxString = minString;
+                    for(String s : list){
+                        Integer tempValue = Integer.valueOf(s.substring(5));
+                        //System.out.println("Temp value: " + tempValue);
+                        if(tempValue > max && tempValue < suffix)  {
+                            max = tempValue;
+                            maxString = s;
+                        }
+                    }
             	//Exists with watch
-            	Stat s = zk.exists(root+"/"+maxString, this);
-            	System.out.println("Watching "+root+"/"+maxString);
-            	//Step 5
-            	if (s != null) {
-            	    //Wait for notification
-            	    break;  
-            	}
-	    }
+                    Stat s = zk.exists(root+"/"+maxString, this);
+                    System.out.println("Watching "+root+"/"+maxString);
+                    //Step 5
+                    if (s != null) {
+                        //Wait for notification
+                        break;  
+                    }
+	        }
             System.out.println(pathName+" is waiting for a notification!");
-	    return false;
-	}
+	        return false;
+	    }
 
         synchronized public void process(WatchedEvent event) {
             synchronized (mutex) {
