@@ -24,7 +24,7 @@ curl --request POST \
 
 ```bash
 curl --request POST \
-  --url http://localhost:8081/domain/barrier \
+  --url http://localhost:8090/domain/barrier \
   --header 'Content-Type: application/json' \
   --data '["SyncPrimitive","localhost"]'
 ```
