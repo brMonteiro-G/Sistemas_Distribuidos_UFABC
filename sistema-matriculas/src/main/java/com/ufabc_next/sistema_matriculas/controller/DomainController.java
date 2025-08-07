@@ -17,7 +17,7 @@ public class DomainController {
         }
 
         @PostMapping("/queue")
-        public void QueuesTest(@RequestBody String[] args) {
+        public void queuesTest(@RequestBody String[] args) {
             queueTest(args);
         }
 

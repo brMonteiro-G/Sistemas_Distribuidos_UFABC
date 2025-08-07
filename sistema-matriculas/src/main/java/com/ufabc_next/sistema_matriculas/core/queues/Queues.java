@@ -6,40 +6,44 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
 public class Queues implements Watcher {
-      public static void queueTest(String args[]) {
-        Queue q = new Queue(args[1], "/app3");
+    public static void queueTest(String[] args) {
+        String queueName = args[1];
+        int queueSize = Integer.parseInt(args[2]);
+        String queueOperation = args[3];
 
-        System.out.println("Input: " + args[1]);
+
+        Queue q = new Queue(queueName, "/app3");
+
+        System.out.println("Input: " + queueName);
         int i;
-        Integer max = Integer.valueOf(args[2]);
 
-        if (args[3].equals("p")) {
+        if (queueOperation.equals("p")) {
             System.out.println("Producer");
-            for (i = 0; i < max; i++)
-                try{
+            for (i = 0; i < queueSize; i++)
+                try {
                     q.produce(10 + i);
-                } catch (KeeperException e){
+                } catch (KeeperException e) {
                     e.printStackTrace();
-                } catch (InterruptedException e){
-			    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
         } else {
             System.out.println("Consumer");
 
-            for (i = 0; i < max; i++) {
-                try{
+            for (i = 0; i < queueSize; i++) {
+                try {
                     int r = q.consume();
                     System.out.println("Item: " + r);
-                } catch (KeeperException e){
+                } catch (KeeperException e) {
                     i--;
-                } catch (InterruptedException e){
-			    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
 
-        @Override
+    @Override
     public void process(WatchedEvent watchedEvent) {
 
     }
