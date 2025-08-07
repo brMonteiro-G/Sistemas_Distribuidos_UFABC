@@ -14,15 +14,15 @@ public class Barrier extends SyncPrimitive {
     private final int size;
     private String name;
 
-    public Barrier(String var1, String var2, int var3) {
-        super(var1);
-        this.root = var2;
-        this.size = var3;
+    public Barrier(String address, String root, int size) {
+        super(address);
+        this.root = root;
+        this.size = size;
         if (zk != null) {
             try {
-                Stat var4 = zk.exists(var2, false);
+                Stat var4 = zk.exists(root, false);
                 if (var4 == null) {
-                    zk.create(var2, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+                    zk.create(root, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 }
             } catch (KeeperException var6) {
                 System.out.println("Keeper exception when instantiating queue: " + var6);
@@ -44,8 +44,8 @@ public class Barrier extends SyncPrimitive {
 
         while (true) {
             synchronized (mutex) {
-                List<String> var2 = zk.getChildren(this.root, true);
-                if (var2.size() >= this.size) {
+                List<String> root = zk.getChildren(this.root, true);
+                if (root.size() >= this.size) {
                     return true;
                 }
 
@@ -59,8 +59,8 @@ public class Barrier extends SyncPrimitive {
 
         while (true) {
             synchronized (mutex) {
-                List<String> var2 = zk.getChildren(this.root, true);
-                if (var2.isEmpty()) {
+                List<String> root = zk.getChildren(this.root, true);
+                if (root.isEmpty()) {
                     return;
                 }
 

@@ -7,30 +7,30 @@ import java.util.Random;
 
 public class BarrierService {
 
-    public static void barrierCreation(String[] var0) {
-        Barrier var1 = new Barrier(var0[1], "/b1", Integer.valueOf(var0[2]));
+    public static void barrierCreation(String[] args) {
+
+        Barrier barrier = new Barrier(args[0], "/b1", Integer.parseInt(args[1]));
 
         try {
-            boolean var2 = var1.enter();
-            System.out.println("Entered barrier: " + var0[2]);
-            if (!var2) {
+            if (!barrier.enter()) {
                 System.out.println("Error when entering the barrier");
             }
+            System.out.println("Entered barrier: " + args[1]);
         } catch (KeeperException | InterruptedException var9) {
         }
 
-        Random var11 = new Random();
-        int var3 = var11.nextInt(100);
+        Random barrier1 = new Random();
+        int var3 = barrier1.nextInt(100);
 
         for (int var4 = 0; var4 < var3; ++var4) {
             try {
-                Thread.sleep(100L);
+                Thread.sleep(10_000);
             } catch (InterruptedException var8) {
             }
         }
 
         try {
-            var1.leave();
+            barrier.leave();
         } catch (KeeperException | InterruptedException var6) {
         }
 
