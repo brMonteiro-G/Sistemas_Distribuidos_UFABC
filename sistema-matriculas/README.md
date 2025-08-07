@@ -17,7 +17,7 @@ docker-compose up -d --build
 
 ```bash
 curl --request POST \
-  --url http://localhost:8081/domain/elect \
+  --url http://localhost:8090/domain/elect \
   --header 'Content-Type: application/json' \
   --data '["SyncPrimitive","localhost"]'
 ```
