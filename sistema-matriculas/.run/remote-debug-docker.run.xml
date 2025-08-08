@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="remote debug docker" type="Remote">
+    <output_file path="logs-output.log" is_save="true" />
+    <module name="sistema-matriculas" />
+    <option name="USE_SOCKET_TRANSPORT" value="true" />
+    <option name="SERVER_MODE" value="true" />
+    <option name="SHMEM_ADDRESS" />
+    <option name="HOST" value="127.0.0.1" />
+    <option name="PORT" value="8012" />
+    <option name="AUTO_RESTART" value="false" />
+    <method v="2" />
+  </configuration>
+</component>
