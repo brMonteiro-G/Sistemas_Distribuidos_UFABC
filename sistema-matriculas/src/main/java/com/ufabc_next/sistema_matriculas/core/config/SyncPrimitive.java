@@ -4,6 +4,7 @@ package com.ufabc_next.sistema_matriculas.core.config;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 
@@ -14,9 +15,13 @@ public class SyncPrimitive implements Watcher {
     public static ZooKeeper zk = null;
     public static Integer mutex;
 
+    @Value("server.address")
+    public static String address;
+
+
     protected String root;
 
-    public SyncPrimitive(String address) {
+    public SyncPrimitive() {
         if(zk == null){
             try {
                 System.out.println("Starting ZK:");

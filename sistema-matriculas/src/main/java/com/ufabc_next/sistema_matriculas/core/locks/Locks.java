@@ -7,7 +7,7 @@ import org.apache.zookeeper.Watcher;
 
 public class Locks implements Watcher {
     public static void exec(String args[]) {
-        var lock = new Lock(args[1], "/lock", Long.valueOf(args[2]));
+        var lock = new Lock( "/lock", Long.valueOf(args[2]));
         try {
             var success = lock.lock();
             if (success) {

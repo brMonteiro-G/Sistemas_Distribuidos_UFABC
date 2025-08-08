@@ -28,3 +28,10 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '["SyncPrimitive","localhost"]'
 ```
+
+
+### Executando debugando ações no zookeeper
+
+```bash
+sh zkCli.sh -server host.docker.internal
+```

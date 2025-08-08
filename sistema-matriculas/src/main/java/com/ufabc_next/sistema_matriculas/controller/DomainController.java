@@ -15,10 +15,12 @@ import static com.ufabc_next.sistema_matriculas.core.queues.Queues.queueTest;
 @RequestMapping("/domain")
 public class DomainController {
 
-    @PostMapping("/elect")
-    public void electLeader(@RequestBody String[] args) {
-        leaderElection(args);
-    }
+
+        @PostMapping("/elect")
+        public void electLeader(@RequestBody String[] args) {
+            leaderElection();
+        }
+
 
     @PostMapping("/queue")
     public void queuesTest(@RequestBody String[] args) {

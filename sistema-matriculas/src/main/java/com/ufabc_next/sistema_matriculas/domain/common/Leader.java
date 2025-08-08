@@ -4,23 +4,25 @@ import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
+import java.nio.ByteBuffer;
 import java.util.List;
+
 
 public class Leader extends SyncPrimitive {
     String leader;
     String id; //Id of the leader
     String pathName;
+    Queue queue = new Queue("default-queue-message");
 
     /**
      * Constructor of Leader
      *
-     * @param address
      * @param name Name of the election node
      * @param leader Name of the leader node
      *
      */
-    public Leader(String address, String name, String leader, int id) {
-        super(address);
+    public Leader(String name, String leader, int id) {
+
         this.root = name;
         this.leader = leader;
         this.id = Integer.valueOf(id).toString();
@@ -30,6 +32,7 @@ public class Leader extends SyncPrimitive {
                 //Create election znode
                 Stat s1 = zk.exists(root, false);
                 if (s1 == null) {
+                    //queue.produce(10);
                     zk.create(root, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 }
                 //Checking for a leader
@@ -131,4 +134,23 @@ public class Leader extends SyncPrimitive {
         }
         System.exit(0);
     }
+
+
+    public boolean produceMessage(int max) {
+        System.out.println("Start produce message");
+
+        int i;
+
+        try {
+            for (i = 0; i < max; i++)
+                queue.produce(10 + i);
+            return true;
+        }catch(Exception ex){
+            ex.printStackTrace();
+            System.exit(0);
+            throw new RuntimeException(ex);
+
+        }
+    }
+
 }
