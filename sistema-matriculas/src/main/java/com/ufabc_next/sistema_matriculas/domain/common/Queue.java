@@ -15,11 +15,10 @@ public class Queue extends SyncPrimitive {
     /**
      * Constructor of producer-consumer queue
      *
-     * @param address
      * @param name
      */
-    public Queue(String address, String name) {
-        super(address);
+    public Queue(String name) {
+
         this.root = name;
         // Create ZK node name
         if (zk != null) {
