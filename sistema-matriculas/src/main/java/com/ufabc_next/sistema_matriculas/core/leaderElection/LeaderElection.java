@@ -15,7 +15,8 @@ public class LeaderElection implements Watcher {
         // Generate random integer
         Random rand = new Random();
         int r = rand.nextInt(1000000);
-        Leader leader = new Leader("/election","/leader",r);
+        Leader leader = new Leader("host.docker.internal","/election","/leader",r);
+
         try{
             boolean success = leader.elect();
             if (success) {
