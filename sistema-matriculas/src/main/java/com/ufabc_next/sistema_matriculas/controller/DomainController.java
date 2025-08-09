@@ -3,6 +3,7 @@ package com.ufabc_next.sistema_matriculas.controller;
 import com.ufabc_next.sistema_matriculas.core.locks.Locks;
 import org.springframework.web.bind.annotation.*;
 
+import static com.ufabc_next.sistema_matriculas.core.barriers.Barriers.barrierCreation;
 import static com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection.leaderElection;
 import static com.ufabc_next.sistema_matriculas.core.queues.Queues.queueTest;
 
@@ -25,4 +26,9 @@ public class DomainController {
         public void lock(@RequestBody String[] args) {
             Locks.exec(args);
         }
+
+    @PostMapping("/barrier")
+    public void createBarrier(@RequestBody String[] args) {
+        barrierCreation(args);
+    }
 }
