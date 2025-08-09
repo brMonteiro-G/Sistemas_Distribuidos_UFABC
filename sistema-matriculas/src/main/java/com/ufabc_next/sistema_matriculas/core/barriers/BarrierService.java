@@ -11,6 +11,7 @@ public class BarrierService {
 
         Barrier barrier = new Barrier( "host.docker.internal","/b1", Integer.parseInt(args[1]));
 
+
         try {
             if (!barrier.enter()) {
                 System.out.println("Error when entering the barrier");

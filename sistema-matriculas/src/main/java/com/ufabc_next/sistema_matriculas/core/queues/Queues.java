@@ -9,6 +9,7 @@ public class Queues implements Watcher {
       public static void queueTest(String args[]) {
         Queue q = new Queue("host.docker.internal", "/app3");
 
+
         System.out.println("Input: " + args[1]);
         int i;
         Integer max = Integer.valueOf(args[2]);
