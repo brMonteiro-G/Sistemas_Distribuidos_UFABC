@@ -17,7 +17,21 @@ docker-compose up -d --build
 
 ```bash
 curl --request POST \
-  --url http://localhost:8081/leader/elect \
+  --url http://localhost:8090/domain/elect \
   --header 'Content-Type: application/json' \
   --data '["SyncPrimitive","localhost"]'
+```
+
+```bash
+curl --request POST \
+  --url http://localhost:8090/domain/barrier \
+  --header 'Content-Type: application/json' \
+  --data '["SyncPrimitive","localhost"]'
+```
+
+
+### Executando debugando ações no zookeeper
+
+```bash
+sh zkCli.sh -server host.docker.internal
 ```

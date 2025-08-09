@@ -13,11 +13,9 @@ public class Lock extends SyncPrimitive {
     /**
      * Constructor of lock
      *
-     * @param address
      * @param name    Name of the lock node
      */
-    public Lock(String address, String name, long waitTime) {
-        super(address);
+    public Lock( String name, long waitTime) {
         this.root = name;
         this.wait = waitTime;
         // Create ZK node name
