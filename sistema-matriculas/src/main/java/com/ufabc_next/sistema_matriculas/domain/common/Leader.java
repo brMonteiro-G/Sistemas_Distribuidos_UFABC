@@ -3,15 +3,22 @@ package com.ufabc_next.sistema_matriculas.domain.common;
 import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class Leader extends SyncPrimitive {
-    public String leader;
-    public String id; //Id of the leader
+    public  static String leader;
+    public static  String id; //Id of the leader
     public  String pathName;
     public  Queue queue = new Queue("host.docker.internal","/teste");
 
@@ -19,8 +26,8 @@ public class Leader extends SyncPrimitive {
     public Leader(String address, String name, String leader, int id) {
         super(address);
         this.root = name;
-        this.leader = leader;
-        this.id = Integer.valueOf(id).toString();
+        Leader.leader = leader;
+        Leader.id = Integer.valueOf(id).toString();
         // Create ZK node name
         if (zk != null) {
             try {
@@ -127,7 +134,7 @@ public class Leader extends SyncPrimitive {
         try {
             produceAsLeaderAtomic();
 
-            new Thread().sleep(90000);
+            new Thread().sleep(1000000);
             System.out.println("Process "+id+" died!");
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -148,7 +155,9 @@ public class Leader extends SyncPrimitive {
 
         if (leaderId.equals(id)) {
             // Eu sou o líder
-            produceAsLeaderAtomic();
+            queue.produce(10);
+
+           // produceAsLeaderAtomic();
         } else {
             System.out.println("Sou seguidor, não produzo. Líder atual: " + leaderId);
         }
@@ -207,7 +216,7 @@ public class Leader extends SyncPrimitive {
 //        zk.multi(ops);
 //
         // zk.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
-        zk.create(root + "/element", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+        zk.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
 
 
         System.out.println("Líder " + id + " produziu a mensagem de forma atômica.");

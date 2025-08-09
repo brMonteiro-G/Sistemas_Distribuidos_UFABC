@@ -3,14 +3,18 @@ package com.ufabc_next.sistema_matriculas.domain.common;
 import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
  * Producer-Consumer queue
  */
 public class Queue extends SyncPrimitive {
+
+
 
     /**
      * Constructor of producer-consumer queue
@@ -50,7 +54,33 @@ public class Queue extends SyncPrimitive {
         // Add child with value i
         b.putInt(i);
         value = b.array();
-        zk.create(root + "/element", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+
+       // metodo
+        String leaderidentification = "/leader";
+
+        Stat leaderStat = zk.exists(leaderidentification, false);
+
+        // Já existe líder → pega o ID
+        byte[] leaderData = zk.getData(leaderidentification, false, leaderStat);
+        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
+
+        // metodo
+
+        System.out.println("id do current leader " + Leader.id);
+
+        if (leaderId.equals(Leader.id)) {
+            // Eu sou o líder
+
+            System.out.println("sou lider entao posso produzir");
+            zk.create(root + "/element", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+
+        }else {
+
+                System.out.println("não sou lider entao não posso produzir");
+
+                throw new RuntimeException("Apenas lider faz a producao");
+
+        }
 
         return true;
     }
@@ -97,4 +127,8 @@ public class Queue extends SyncPrimitive {
             }
         }
     }
+
+
+
+
 }

@@ -21,3 +21,7 @@ curl --request POST \
   --header 'Content-Type: application/json' \
   --data '["SyncPrimitive","localhost"]'
 ```
+
+### Execução de fluxos 
+
+Importar arquivo http-requests-zk.yaml no insominia, primeiro colocar todos os nós para leader election e depois tentar produzir e consumir mensagens entre eles. 
