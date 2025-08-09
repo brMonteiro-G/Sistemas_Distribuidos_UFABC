@@ -5,28 +5,40 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
+import java.util.Objects;
+
 public class Queues implements Watcher {
-      public static void queueTest(String args[]) {
-        Queue q = new Queue("host.docker.internal", "/app3");
 
-        System.out.println("Input: " + args[1]);
+
+      public static void queueTest(String operation) throws InterruptedException, KeeperException {
+        Queue q = new Queue("host.docker.internal", "/communication-queue");
+        System.out.println("Iniciando execução da fila");
+
+
+
         int i;
-        Integer max = Integer.valueOf(args[2]);
+        int batchSize = 10;
 
-        if (args[3].equals("p")) {
-            System.out.println("Producer");
-            for (i = 0; i < max; i++)
+        if (Objects.equals(operation, "producer")) {
+            System.out.println("fila executada por metodo producer");
+
+            for (i = 0; i < batchSize; i++)
                 try{
                     q.produce(10 + i);
-                } catch (KeeperException e){
-                    e.printStackTrace();
-                } catch (InterruptedException e){
-			    e.printStackTrace();
+                    //checkIfIsLeaderAndProduce();
+                } catch (KeeperException | InterruptedException e){
+                    System.out.println("Deu erro " + e);
+
+                    throw e;
                 }
+
         } else {
             System.out.println("Consumer");
 
-            for (i = 0; i < max; i++) {
+            int batchConsumerSize = 2;
+
+
+            for (i = 0; i < batchConsumerSize; i++) {
                 try{
                     int r = q.consume();
                     System.out.println("Item: " + r);
@@ -36,8 +48,11 @@ public class Queues implements Watcher {
 			    e.printStackTrace();
                 }
             }
+
+
         }
     }
+
 
 
 

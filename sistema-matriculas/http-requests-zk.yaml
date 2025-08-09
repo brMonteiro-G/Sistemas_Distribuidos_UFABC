@@ -1,0 +1,284 @@
+type: collection.insomnia.rest/5.0
+name: My Collection
+meta:
+  id: wrk_4717852bf4054c249efaf7a5d3852d5a
+  created: 1754263848547
+  modified: 1754263848547
+  description: ""
+collection:
+  - name: http-requests-zk
+    meta:
+      id: fld_e80c24bcae614245b20105cfae2ac786
+      created: 1754764141673
+      modified: 1754764146848
+      sortKey: -1754764141723
+      description: ""
+    children:
+      - url: http://localhost:8090/domain/elect
+        name: leader elect - zk1
+        meta:
+          id: req_37a100e6c7454812bc1d1cf2adab8bec
+          created: 1754263856238
+          modified: 1754764154693
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152647
+        method: POST
+        body:
+          mimeType: application/json
+          text: '["host.docker.internal","host.docker.internal"]'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8082/domain/elect
+        name: leader elect - zk2
+        meta:
+          id: req_060fbf1265714dbe848ab189255897fe
+          created: 1754449156148
+          modified: 1754764162434
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152597
+        method: POST
+        body:
+          mimeType: application/json
+          text: '["host.docker.internal","host.docker.internal"]'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8083/domain/elect
+        name: leader elect - zk3
+        meta:
+          id: req_9582986a73914e33bd4cae99e3fc4930
+          created: 1754449177321
+          modified: 1754764168269
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152553.25
+        method: POST
+        body:
+          mimeType: application/json
+          text: '["host.docker.internal","host.docker.internal"]'
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8090/domain/queue/producer
+        name: produce message - zk1
+        meta:
+          id: req_b78306e6faf24ef79abd847e320e4714
+          created: 1754708394437
+          modified: 1754764174745
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152672
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8082/domain/queue/producer
+        name: produce message - zk2
+        meta:
+          id: req_8c6609f8ee504423afe1b7143a94d8cd
+          created: 1754708411893
+          modified: 1754764164221
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152572
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8083/domain/queue/producer
+        name: produce message - zk3
+        meta:
+          id: req_da3da153f3df40a69b5ce364c2994ad1
+          created: 1754708428729
+          modified: 1754764169945
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152550.125
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8090/queue/consume
+        name: consume message - zk1
+        meta:
+          id: req_b65b16b200424c91a4b657f5a06346c2
+          created: 1754708532547
+          modified: 1754764157371
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152697
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8082/domain/queue/consume
+        name: consume message - zk2
+        meta:
+          id: req_a3738973acd842a8bd33cb5b73674e4a
+          created: 1754708540708
+          modified: 1754764166500
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152559.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8083/domain/queue/consume
+        name: consume message - zk3
+        meta:
+          id: req_f5d7a9f3caac468e9d8541ea6e94337c
+          created: 1754708551357
+          modified: 1754764171934
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152548.5625
+        method: POST
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: ""
+        name: New Request
+        meta:
+          id: req_df9b22f146c848d0b1a34c7cace54d01
+          created: 1754764152747
+          modified: 1754764152747
+          isPrivate: false
+          description: ""
+          sortKey: -1754764152747
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.4.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_7d9b5e93fa75ff9c53012bf86992c09cfe7fd665
+    created: 1754263848551
+    modified: 1754263848551
+environments:
+  name: Base Environment
+  meta:
+    id: env_7d9b5e93fa75ff9c53012bf86992c09cfe7fd665
+    created: 1754263848550
+    modified: 1754263848550
+    isPrivate: false
