@@ -9,7 +9,7 @@ public class BarrierService {
 
     public static void barrierCreation(String[] args) {
 
-        Barrier barrier = new Barrier(args[0], "/b1", Integer.parseInt(args[1]));
+        Barrier barrier = new Barrier( "/b1", Integer.parseInt(args[1]));
 
         try {
             if (!barrier.enter()) {

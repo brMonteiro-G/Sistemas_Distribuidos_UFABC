@@ -14,8 +14,7 @@ public class Barrier extends SyncPrimitive {
     private final int size;
     private String name;
 
-    public Barrier(String address, String root, int size) {
-        super(address);
+    public Barrier( String root, int size) {
         this.root = root;
         this.size = size;
         if (zk != null) {
