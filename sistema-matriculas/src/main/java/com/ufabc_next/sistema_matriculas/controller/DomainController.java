@@ -3,7 +3,7 @@ package com.ufabc_next.sistema_matriculas.controller;
 import com.ufabc_next.sistema_matriculas.core.locks.Locks;
 import org.springframework.web.bind.annotation.*;
 
-import static com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection.leaderElection;
+import static com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection.*;
 import static com.ufabc_next.sistema_matriculas.core.queues.Queues.queueTest;
 
 
@@ -16,7 +16,19 @@ public class DomainController {
             leaderElection(args);
         }
 
-        @PostMapping("/queue")
+
+        @PostMapping("/leader/produce")
+        public void produceMessagess(@RequestBody String[] args) {
+                produce(args);
+        }
+
+        @PostMapping("/follower/consume")
+        public void consumeMessage(@RequestBody String[] args) {
+            consume(args);
+        }
+
+
+    @PostMapping("/queue")
         public void QueuesTest(@RequestBody String[] args) {
             queueTest(args);
         }
