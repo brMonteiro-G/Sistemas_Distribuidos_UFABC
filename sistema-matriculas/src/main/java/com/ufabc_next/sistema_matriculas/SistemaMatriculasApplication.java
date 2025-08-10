@@ -11,9 +11,10 @@ public class SistemaMatriculasApplication {
         SpringApplication.run(SistemaMatriculasApplication.class, args);
 
         try {
-            Barrier barrier = new Barrier("host.docker.internal:2181", // endereço do ZooKeeper
-                    "/barrier"                 // znode da barreira
-            );
+
+            System.out.println("Starting barrier ");
+
+            Barrier barrier = new Barrier("host.docker.internal:2181", "/barrier");
             barrier.enter();
             System.out.println("Entered barrier: /barrier");
         } catch (Exception e) {

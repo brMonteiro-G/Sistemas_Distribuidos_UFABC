@@ -39,7 +39,7 @@ services:
       - "2182:2181"
       - "2889:2888"
       - "3889:3888"
-      - "8083:8090"
+      - "8082:8090"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -58,10 +58,39 @@ services:
       - "2183:2181"
       - "2890:2888"
       - "3890:3888"
-      - "8082:8090"
+      - "8083:8090"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 3
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
+
+    ## remove start app to test barrier feature
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
+
+  zk-cli:
+    build:
+      context: .
+    container_name: zk_cli
+    working_dir: /opt/zookeeper/bin
+    networks:
+      zknet:
+        ipv4_address: 172.28.0.14
+    ports:
+      - "2184:2181"
+      - "2891:2888"
+      - "3891:3888"
+      - "8084:8090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
+
+    ## removing start app to test barrier feature
+    command: ["sh", "-c", "sleep infinity"]
+
+    depends_on:
+      zookeeper3:
+        condition: service_started
+

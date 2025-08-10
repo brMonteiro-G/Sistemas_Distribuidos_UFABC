@@ -1,0 +1,1 @@
+sh zkCli.sh -server docker.host.internal & ls /

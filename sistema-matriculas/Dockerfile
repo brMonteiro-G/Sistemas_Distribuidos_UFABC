@@ -29,6 +29,7 @@ COPY . .
 COPY logback.xml ${ZK_HOME}/conf/logback.xml
 
 RUN chmod 777 ./build_and_run.sh
+RUN mv debug-zk.sh /opt/zookeeper/bin
 
 # Set CLASSPATH for ZooKeeper jars
 ENV CP=.:${ZK_HOME}/lib/zookeeper-${ZK_VERSION}.jar:${ZK_HOME}/lib/zookeeper-jute-${ZK_VERSION}.jar:${ZK_HOME}/lib/slf4j-api-1.7.30.jar:${ZK_HOME}/lib/logback-core-1.2.13.jar:${ZK_HOME}/lib/logback-classic-1.2.13.jar:${ZK_HOME}/lib/netty-handler-4.1.113.Final.jar
