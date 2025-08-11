@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive.mutex;
+import static com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive.zk;
+
 public class Queues implements Watcher {
 
 
@@ -57,6 +60,7 @@ public class Queues implements Watcher {
         }
         return "operação executada";
     }
+
 
     @Override
     public void process(WatchedEvent watchedEvent) {
