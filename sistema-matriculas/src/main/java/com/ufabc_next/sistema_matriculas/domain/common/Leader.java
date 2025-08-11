@@ -6,6 +6,8 @@ import org.apache.zookeeper.data.Stat;
 
 import java.util.List;
 
+import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
+
 public class Leader extends SyncPrimitive {
     String leader;
     static String id; //Id of the leader
@@ -113,10 +115,13 @@ public class Leader extends SyncPrimitive {
     public void compute() {
         System.out.println("I will die after 10 seconds!");
         try {
+            processRequestMessage("producer", "hello world");
             new Thread().sleep(60000);
             System.out.println("Process "+id+" died!");
         } catch (InterruptedException e) {
             e.printStackTrace();
+        } catch (KeeperException e) {
+            throw new RuntimeException(e);
         }
         System.exit(0);
     }

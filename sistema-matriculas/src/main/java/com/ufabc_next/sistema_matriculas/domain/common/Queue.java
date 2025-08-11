@@ -135,14 +135,12 @@ public class Queue extends SyncPrimitive {
             System.out.println("event type for queue watcher " + event.getType());
             System.out.println("event path for queue watcher " + event.getPath());
 
-            if (event.getType() == Event.EventType.NodeDataChanged) {
+            if (event.getType() == Event.EventType.NodeChildrenChanged) {
 
                 System.out.println("data changed on path for queue ");
                 try {
                     zk.getChildren("/communication-queue", this);
-                } catch (KeeperException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
+                } catch (KeeperException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
 
