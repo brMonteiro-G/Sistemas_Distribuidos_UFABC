@@ -1,6 +1,7 @@
 package com.ufabc_next.sistema_matriculas.domain.common;
 
 import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
+import com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
@@ -14,10 +15,10 @@ public class Barrier extends SyncPrimitive {
     private final int size;
     private String name;
 
-    public Barrier( String address, String root, int size) {
+    public Barrier(String address, String root) {
         super(address);
         this.root = root;
-        this.size = size;
+        this.size = 3; // Default size
         if (zk != null) {
             try {
                 Stat var4 = zk.exists(root, false);
@@ -46,6 +47,16 @@ public class Barrier extends SyncPrimitive {
             synchronized (mutex) {
                 List<String> root = zk.getChildren(this.root, true);
                 if (root.size() >= this.size) {
+                    if (root.size() == this.size) {
+                        // Logging the barrier nodes
+                        System.out.println("Barrier reached with nodes: " + root);
+                        //Logging the barrier reached and de starting leader election
+                        System.out.println("Barrier reached with size: " + root.size() + ", starting leader election...");
+                        String[] args = new String[0];
+                        LeaderElection.leaderElection(args);
+                        // Notify all waiting threads that the barrier has been reached
+                        mutex.notifyAll();
+                    }
                     return true;
                 }
 

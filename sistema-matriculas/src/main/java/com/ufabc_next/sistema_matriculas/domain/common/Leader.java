@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
+
 
 
 
@@ -20,7 +22,7 @@ public class Leader extends SyncPrimitive {
     public  static String leader;
     public static  String id; //Id of the leader
     public  String pathName;
-    public  Queue queue = new Queue("host.docker.internal","/teste");
+    //public  Queue queue = new Queue("host.docker.internal","/teste");
 
 
     public Leader(String address, String name, String leader, int id) {
@@ -132,7 +134,7 @@ public class Leader extends SyncPrimitive {
     public void compute() {
         System.out.println("I will die after 10 seconds!");
         try {
-            produceAsLeaderAtomic();
+            processRequestMessage("producer", "Hello world I became the leader");
 
             new Thread().sleep(1000000);
             System.out.println("Process "+id+" died!");
@@ -144,83 +146,83 @@ public class Leader extends SyncPrimitive {
         System.exit(0);
     }
 
+//TODO: nao excluir -- codigo para estudar locks entre nós
 
-
-    public void checkIfIsLeaderAndProduce() throws InterruptedException, KeeperException {
-        Stat leaderStat = zk.exists(leader, false);
-
-        // Já existe líder → pega o ID
-        byte[] leaderData = zk.getData(leader, false, leaderStat);
-        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
-
-        if (leaderId.equals(id)) {
-            // Eu sou o líder
-            queue.produce(10);
-
-           // produceAsLeaderAtomic();
-        } else {
-            System.out.println("Sou seguidor, não produzo. Líder atual: " + leaderId);
-        }
-    }
-
-    public void checkIfIsConsumer() throws InterruptedException, KeeperException {
-        Stat leaderStat = zk.exists(leader, false);
-
-        if (leaderStat == null) {
-            // Não existe líder → cria e vira líder
-            zk.create(
-                    leader,
-                    id.getBytes(),
-                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.EPHEMERAL
-            );
-            System.out.println("Eu virei o líder: " + id);
-            produceAsLeaderAtomic();
-            return;
-        }
-
-        // Já existe líder → pega o ID
-        byte[] leaderData = zk.getData(leader, false, leaderStat);
-        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
-
-        if (leaderId.equals(id)) {
-            // Eu sou o líder
-            produceAsLeaderAtomic();
-        } else {
-            System.out.println("Sou seguidor, não produzo. Líder atual: " + leaderId);
-            System.out.println("Sou seguidor, apenas consumo: " + leaderId);
-
-            queue.consume();
-
-        }
-    }
-
-    private void produceAsLeaderAtomic() throws KeeperException, InterruptedException {
-        String message = id + ":42:helloWorld"; // ID do líder + valor qualquer
-        byte[] value = message.getBytes(StandardCharsets.UTF_8);
-
-        // Obter versão atual do znode /leader
-        Stat leaderStat = zk.exists(leader, false);
-        int currentVersion = leaderStat.getVersion();
-
-        System.out.println("vou produzir");
-
-//        // Criar lista de operações atômicas
-//        List<Op> ops = new ArrayList<>();
-//        // 1. Verifica se /leader ainda tem a mesma versão
-//        ops.add(Op.check(leader, currentVersion));
-//        // 2. Cria o elemento na fila
-//        ops.add(Op.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL));
+//    public void checkIfIsLeaderAndProduce() throws InterruptedException, KeeperException {
+//        Stat leaderStat = zk.exists(leader, false);
 //
-//        // Executa de forma atômica
-//        zk.multi(ops);
+//        // Já existe líder → pega o ID
+//        byte[] leaderData = zk.getData(leader, false, leaderStat);
+//        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
 //
-        // zk.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
-        zk.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
-
-
-        System.out.println("Líder " + id + " produziu a mensagem de forma atômica.");
-    }
+//        if (leaderId.equals(id)) {
+//            // Eu sou o líder
+//            queue.produce(10);
+//
+//           // produceAsLeaderAtomic();
+//        } else {
+//            System.out.println("Sou seguidor, não produzo. Líder atual: " + leaderId);
+//        }
+//    }
+//
+//    public void checkIfIsConsumer() throws InterruptedException, KeeperException {
+//        Stat leaderStat = zk.exists(leader, false);
+//
+//        if (leaderStat == null) {
+//            // Não existe líder → cria e vira líder
+//            zk.create(
+//                    leader,
+//                    id.getBytes(),
+//                    ZooDefs.Ids.OPEN_ACL_UNSAFE,
+//                    CreateMode.EPHEMERAL
+//            );
+//            System.out.println("Eu virei o líder: " + id);
+//            produceAsLeaderAtomic();
+//            return;
+//        }
+//
+//        // Já existe líder → pega o ID
+//        byte[] leaderData = zk.getData(leader, false, leaderStat);
+//        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
+//
+//        if (leaderId.equals(id)) {
+//            // Eu sou o líder
+//            produceAsLeaderAtomic();
+//        } else {
+//            System.out.println("Sou seguidor, não produzo. Líder atual: " + leaderId);
+//            System.out.println("Sou seguidor, apenas consumo: " + leaderId);
+//
+//            queue.consume();
+//
+//        }
+//    }
+//
+//    private void produceAsLeaderAtomic() throws KeeperException, InterruptedException {
+//        String message = id + ":42:helloWorld"; // ID do líder + valor qualquer
+//        byte[] value = message.getBytes(StandardCharsets.UTF_8);
+//
+//        // Obter versão atual do znode /leader
+//        Stat leaderStat = zk.exists(leader, false);
+//        int currentVersion = leaderStat.getVersion();
+//
+//        System.out.println("vou produzir");
+//
+////        // Criar lista de operações atômicas
+////        List<Op> ops = new ArrayList<>();
+////        // 1. Verifica se /leader ainda tem a mesma versão
+////        ops.add(Op.check(leader, currentVersion));
+////        // 2. Cria o elemento na fila
+////        ops.add(Op.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL));
+////
+////        // Executa de forma atômica
+////        zk.multi(ops);
+////
+//        // zk.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+//        zk.create(root + "/n-", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+//
+//
+//        System.out.println("Líder " + id + " produziu a mensagem de forma atômica.");
+//    }
 
 
 

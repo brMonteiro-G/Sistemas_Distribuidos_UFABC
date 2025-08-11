@@ -9,7 +9,7 @@ public class BarrierService {
 
     public static void barrierCreation(String[] args) {
 
-        Barrier barrier = new Barrier( "host.docker.internal","/b1", Integer.parseInt(args[1]));
+        Barrier barrier = new Barrier( "host.docker.internal","/b1");
 
         try {
             if (!barrier.enter()) {

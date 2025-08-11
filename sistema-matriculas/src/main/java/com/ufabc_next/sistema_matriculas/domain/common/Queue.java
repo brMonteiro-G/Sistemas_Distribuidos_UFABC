@@ -15,7 +15,6 @@ import java.util.List;
 public class Queue extends SyncPrimitive {
 
 
-
     /**
      * Constructor of producer-consumer queue
      *
@@ -47,13 +46,8 @@ public class Queue extends SyncPrimitive {
      * @return
      */
 
-    public boolean produce(int i) throws KeeperException, InterruptedException {
-        ByteBuffer b = ByteBuffer.allocate(4);
-        byte[] value;
+    public String produce(String message) throws KeeperException, InterruptedException {
 
-        // Add child with value i
-        b.putInt(i);
-        value = b.array();
 
        // metodo
         String leaderidentification = "/leader";
@@ -72,17 +66,16 @@ public class Queue extends SyncPrimitive {
             // Eu sou o líder
 
             System.out.println("sou lider entao posso produzir");
-            zk.create(root + "/element", value, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
-
+            zk.create(root + "/element", message.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+            return "mensagem postada " + message;
         }else {
 
                 System.out.println("não sou lider entao não posso produzir");
 
-                throw new RuntimeException("Apenas lider faz a producao");
+                return "não sou lider entao não posso produzir";
 
         }
 
-        return true;
     }
 
 
@@ -93,18 +86,23 @@ public class Queue extends SyncPrimitive {
      * @throws KeeperException
      * @throws InterruptedException
      */
-    public int consume() throws KeeperException, InterruptedException {
+    public String consume() throws KeeperException, InterruptedException {
         int retvalue = -1;
         Stat stat = null;
+
 
         // Get the first element available
         while (true) {
             synchronized (mutex) {
+                System.out.println("teste");
+
                 List<String> list = zk.getChildren(root, true);
+                System.out.println("list " + list);
                 if (list.size() == 0) {
                     System.out.println("Going to wait");
                     mutex.wait();
                 } else {
+                    System.out.println("teste-2");
                     Integer min = Integer.valueOf(list.get(0).substring(7));
                     System.out.println("List: " + list.toString());
                     String minString = list.get(0);
@@ -121,8 +119,9 @@ public class Queue extends SyncPrimitive {
                     //System.out.println("b: " + Arrays.toString(b));
                     zk.delete(root + "/" + minString, 0);
                     ByteBuffer buffer = ByteBuffer.wrap(b);
-                    retvalue = buffer.getInt();
-                    return retvalue;
+                    retvalue = buffer.getChar();
+                    return String.valueOf(retvalue);
+
                 }
             }
         }
