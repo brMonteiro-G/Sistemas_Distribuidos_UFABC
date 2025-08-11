@@ -18,7 +18,7 @@ log_and_run() {
 }
 
 # Primeiro executa o Maven (espera terminar)
-log_and_run "mvn clean install" "$RED"
+log_and_run "mvn package" "$RED"
 
 # Agora executa Zookeeper e a aplicação em paralelo
 log_and_run "sh $ZK_HOME/bin/zkServer.sh start-foreground" "$GREEN" &
