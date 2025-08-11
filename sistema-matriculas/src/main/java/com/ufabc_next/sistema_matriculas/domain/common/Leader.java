@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Leader extends SyncPrimitive {
     String leader;
-    String id; //Id of the leader
+    static String id; //Id of the leader
     String pathName;
 
     /**
@@ -97,18 +97,7 @@ public class Leader extends SyncPrimitive {
 
     }
 
-    synchronized public void process(WatchedEvent event) {
-        synchronized (mutex) {
-            if (event.getType() == Watcher.Event.EventType.NodeDeleted) {
-                try {
-                    boolean success = check();
-                    if (success) {
-                        compute();
-                    }
-                } catch (Exception e) {e.printStackTrace();}
-            }
-        }
-    }
+
 
     void leader() throws KeeperException, InterruptedException {
         System.out.println("Become a leader: "+id+"!");
@@ -131,4 +120,30 @@ public class Leader extends SyncPrimitive {
         }
         System.exit(0);
     }
+
+
+    synchronized public void process(WatchedEvent event) {
+        synchronized (mutex) {
+
+            System.out.println("event type for leader watcher " + event.getType());
+            System.out.println("event path for leader watcher " + event.getPath());
+
+            if (event.getType() == Watcher.Event.EventType.NodeDeleted) {
+
+                System.out.println("data deleted on path for leader ");
+
+                try {
+                    boolean success = check();
+                    System.out.println("success on leader check");
+
+                    if (success) {
+                        compute();
+                    }
+                    System.out.println("success on leader election");
+
+                } catch (Exception e) {e.printStackTrace();}
+            }
+        }
+    }
+
 }
