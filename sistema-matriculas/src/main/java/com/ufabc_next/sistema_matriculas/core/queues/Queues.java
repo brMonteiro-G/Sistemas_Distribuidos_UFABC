@@ -19,7 +19,6 @@ public class Queues implements Watcher {
         Queue q = new Queue("host.docker.internal", "/communication-queue");
         System.out.println("Iniciando execução da fila");
 
-
         int i;
         int batchSize = 10;
 
