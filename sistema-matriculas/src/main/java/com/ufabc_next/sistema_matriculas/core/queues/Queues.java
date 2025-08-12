@@ -26,7 +26,7 @@ public class Queues implements Watcher {
             for (i = 0; i < batchSize; i++)
                 try {
                     q.produce("teste");
-                    Thread.sleep(10000);
+                    Thread.sleep(1000);
                     return q.produce(message);
                 } catch (KeeperException | InterruptedException e) {
                     System.out.println("Deu erro " + e);

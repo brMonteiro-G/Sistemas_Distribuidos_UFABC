@@ -4,6 +4,7 @@ import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
@@ -46,6 +47,20 @@ public class Leader extends SyncPrimitive {
                 System.out.println("Interrupted exception");
             }
         }
+    }
+
+    public static boolean isLeader() throws InterruptedException, KeeperException {
+        // metodo
+        String leaderidentification = "/leader";
+
+        Stat leaderStat = zk.exists(leaderidentification, false);
+
+        // Já existe líder → pega o ID
+        byte[] leaderData = zk.getData(leaderidentification, false, leaderStat);
+        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
+
+        // metodo
+        return leaderId.equals(Leader.id);
     }
 
     public boolean elect() throws KeeperException, InterruptedException {

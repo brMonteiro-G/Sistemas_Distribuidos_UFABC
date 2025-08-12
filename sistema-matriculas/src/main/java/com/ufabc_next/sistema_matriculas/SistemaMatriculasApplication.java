@@ -1,6 +1,7 @@
 package com.ufabc_next.sistema_matriculas;
 
 import com.ufabc_next.sistema_matriculas.domain.common.Barrier;
+import com.ufabc_next.sistema_matriculas.domain.common.Leader;
 import com.ufabc_next.sistema_matriculas.domain.common.Queue;
 import org.apache.zookeeper.KeeperException;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +13,6 @@ import static com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive.zk;
 public class SistemaMatriculasApplication {
 
     public static void main(String[] args) throws InterruptedException, KeeperException {
-
         SpringApplication.run(SistemaMatriculasApplication.class, args);
 
         Queue queue = new Queue("host.docker.internal", "/communication-queue");
@@ -27,9 +27,14 @@ public class SistemaMatriculasApplication {
 
         System.out.println("Entered barrier");
 
-        queue.produce("Test message after barrier");
-        queue.consume();
-
+        // Para os seguidores, adicione um loop de consumo
+        while (!Leader.isLeader()) {
+            System.out.println("Sou seguidor, iniciando consumo de mensagens");
+            String message = queue.consume();
+            System.out.println("Mensagem consumida: " + message);
+            // Opcional: adicione um pequeno delay para não sobrecarregar
+            Thread.sleep(1000);
+        }
     }
 
 }

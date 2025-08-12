@@ -7,9 +7,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
 
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,20 +49,9 @@ public class Queue extends SyncPrimitive {
 
     public String produce(String message) throws KeeperException, InterruptedException {
 
-        // metodo
-        String leaderidentification = "/leader";
-
-        Stat leaderStat = zk.exists(leaderidentification, false);
-
-        // Já existe líder → pega o ID
-        byte[] leaderData = zk.getData(leaderidentification, false, leaderStat);
-        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
-
-        // metodo
-
         System.out.println("id do current leader " + Leader.id);
 
-        if (leaderId.equals(Leader.id)) {
+        if (Leader.isLeader()) {
             // Eu sou o líder
 
             System.out.println("Leader producing message: " + message);
@@ -89,45 +76,44 @@ public class Queue extends SyncPrimitive {
      * @throws InterruptedException
      */
     public String consume() throws KeeperException, InterruptedException {
-        int retvalue = -1;
-        Stat stat = null;
+        // Remove Stat stat = null; pois não é usado
 
         System.out.println("Starting consume method");
-        // Get the first element available
         while (true) {
             synchronized (mutex) {
                 List<String> list = zk.getChildren("/communication-queue", this);
-                System.out.println("list " + list);
                 if (list.isEmpty()) {
                     System.out.println("Going to wait");
                     mutex.wait();
                 } else {
                     System.out.println("List is not empty, processing...");
-                    int min = Integer.parseInt(list.get(0).substring(7));
-                    System.out.println("List: " + list);
+                    // Encontra a mensagem mais nova (menor nome lexicograficamente)
+                    // Assumindo que os nomes das mensagens são sequenciais e lexicograficamente ordenados
+                    System.out.println("List of messages: " + list);
                     String minString = list.get(0);
                     for (String s : list) {
-                        int tempValue = Integer.parseInt(s.substring(7));
-                        System.out.println("Temp value: " + tempValue);
-                        if (tempValue < min) {
-                            min = tempValue;
+                        if (s.compareTo(minString) < 0) {
                             minString = s;
                         }
                     }
-                    System.out.println("Temporary value: " + root + "/" + minString);
-                    byte[] b = zk.getData(root + "/" + minString, false, stat);
-                    System.out.println("b: " + Arrays.toString(b));
-//                    zk.delete(root + "/" + minString, 0);
-                    ByteBuffer buffer = ByteBuffer.wrap(b);
-                    retvalue = buffer.getChar();
-                    return String.valueOf(retvalue);
 
+                    // Lê e remove a mensagem
+                    String fullPath = root + "/" + minString;
+                    byte[] data = zk.getData(fullPath, false, null);
+                    String message = new String(data, StandardCharsets.UTF_8);
+                    System.out.println("Consumindo mensagem: " + message);
+
+                    // Deleta a mensagem após consumir
+                    zk.delete(fullPath, 0);
+
+                    return message;
                 }
             }
         }
     }
 
 
+    @Override
     synchronized public void process(WatchedEvent event) {
         synchronized (mutex) {
             if (event.getType() == Event.EventType.NodeChildrenChanged && event.getPath().equals("/communication-queue")) {
@@ -141,6 +127,7 @@ public class Queue extends SyncPrimitive {
                     }
                     // colocando o watcher para esperar por novos eventos
                     zk.getChildren("/communication-queue", this);
+                    mutex.notifyAll();
                 } catch (KeeperException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
