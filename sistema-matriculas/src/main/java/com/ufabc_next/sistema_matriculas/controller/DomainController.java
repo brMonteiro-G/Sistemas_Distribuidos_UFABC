@@ -1,12 +1,11 @@
 package com.ufabc_next.sistema_matriculas.controller;
 
-import com.ufabc_next.sistema_matriculas.core.locks.Locks;
+import com.ufabc_next.sistema_matriculas.domain.common.Lock;
 import org.apache.zookeeper.KeeperException;
 import org.springframework.web.bind.annotation.*;
 
 import static com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection.*;
 import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
-//import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
 
 
 @RestController
@@ -22,6 +21,16 @@ public class DomainController {
     public String produceMessagess(@PathVariable("operation") String operation, @RequestBody String message ) throws InterruptedException, KeeperException {
         // produce(operation);
         return processRequestMessage(operation, message);
+    }
+
+    @PostMapping("/lock")
+    public boolean lockStuff(@RequestBody String message) throws InterruptedException, KeeperException {
+        Lock lock = new Lock("host.docker.internal", "/communication-queue");
+        var result =  lock.lock(message, 10);
+
+        System.out.println("result" + result);
+
+        return result;
     }
 
 //    @PostMapping("/lock")

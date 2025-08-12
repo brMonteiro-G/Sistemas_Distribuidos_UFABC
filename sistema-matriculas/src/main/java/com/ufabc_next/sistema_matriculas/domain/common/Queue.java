@@ -42,7 +42,7 @@ public class Queue extends SyncPrimitive {
     /**
      * Add element to the queue.
      *
-     * @param i
+     * @param ixi caralho
      * @return
      */
 
