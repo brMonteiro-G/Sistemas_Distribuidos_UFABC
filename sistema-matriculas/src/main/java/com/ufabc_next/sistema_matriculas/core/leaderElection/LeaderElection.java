@@ -29,9 +29,8 @@ public class LeaderElection implements Watcher {
             if (success) {
                 leader.compute();
             } else {
-                while(true) {
-                    //Waiting for a notification
-                }
+
+                System.out.println("Não sou líder, aguardando eleição...");
             }
         } catch (KeeperException e){
             e.printStackTrace();

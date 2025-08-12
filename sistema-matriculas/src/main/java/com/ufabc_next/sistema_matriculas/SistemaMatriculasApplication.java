@@ -1,5 +1,6 @@
 package com.ufabc_next.sistema_matriculas;
 
+import com.ufabc_next.sistema_matriculas.domain.common.Barrier;
 import com.ufabc_next.sistema_matriculas.domain.common.Queue;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -23,7 +24,11 @@ public class SistemaMatriculasApplication {
 
 		zk.getChildren("/communication-queue" , queue);
 
-		leaderElection(args);
+
+		Barrier barrier = new Barrier("host.docker.internal:2181", "/barrier");
+		barrier.enter();
+
+		System.out.println("Entered barrier");
 
 
 

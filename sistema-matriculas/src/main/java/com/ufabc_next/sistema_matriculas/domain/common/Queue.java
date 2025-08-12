@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Producer-Consumer queue
@@ -135,11 +137,20 @@ public class Queue extends SyncPrimitive {
             System.out.println("event type for queue watcher " + event.getType());
             System.out.println("event path for queue watcher " + event.getPath());
 
-            if (event.getType() == Event.EventType.NodeChildrenChanged) {
+            if (event.getType() == Event.EventType.NodeChildrenChanged && event.getPath().equals("/communication-queue")) {
 
-                System.out.println("data changed on path for queue ");
+                System.out.println("data changed on path for queue " + event.getPath());
                 try {
-                    zk.getChildren("/communication-queue", this);
+                    List<String> children =  zk.getChildren("/communication-queue", this);
+
+                    for (String child : children) {
+                        byte[] data = zk.getData("/communication-queue/" + child, false, null);
+                        System.out.println("data " + Arrays.toString(data));
+                        String message = new String(data, StandardCharsets.UTF_8);
+                        System.out.println("Mensagem recebida: " + message);
+                    }
+
+
                 } catch (KeeperException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
