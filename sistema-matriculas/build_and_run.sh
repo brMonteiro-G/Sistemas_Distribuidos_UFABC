@@ -17,8 +17,9 @@ log_and_run() {
   done
 }
 
-# Primeiro executa o Maven e pula os testes (espera terminar)
-log_and_run "mvn clean install -DskipTests" "$RED"
+# Primeiro executa o Maven (espera terminar)
+log_and_run "mvn package" "$RED"
+
 # Agora executa Zookeeper e a aplicação em paralelo
 log_and_run "sh $ZK_HOME/bin/zkServer.sh start-foreground" "$GREEN" &
 log_and_run "java -Djava.net.preferIPv4Stack=true -jar ./target/sistema-matriculas-0.0.1-SNAPSHOT.jar" "$BLUE" &

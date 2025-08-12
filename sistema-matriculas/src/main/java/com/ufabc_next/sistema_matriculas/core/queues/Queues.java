@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive.mutex;
+import static com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive.zk;
+
 public class Queues implements Watcher {
 
 
-      public static String processRequestMessage(String operation, String message) throws InterruptedException, KeeperException {
+    public static String processRequestMessage(String operation, String message) throws InterruptedException, KeeperException {
         Queue q = new Queue("host.docker.internal", "/communication-queue");
         System.out.println("Iniciando execução da fila");
 
@@ -49,7 +52,7 @@ public class Queues implements Watcher {
                 } catch (KeeperException e){
                     i--;
                 } catch (InterruptedException e){
-			    e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
             return consumedMessages.toString();
@@ -59,9 +62,7 @@ public class Queues implements Watcher {
     }
 
 
-
-
-        @Override
+    @Override
     public void process(WatchedEvent watchedEvent) {
 
     }

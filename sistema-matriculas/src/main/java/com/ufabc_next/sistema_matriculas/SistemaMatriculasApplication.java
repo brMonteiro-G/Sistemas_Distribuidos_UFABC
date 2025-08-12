@@ -1,12 +1,25 @@
 package com.ufabc_next.sistema_matriculas;
 
-import com.ufabc_next.sistema_matriculas.domain.common.Barrier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class SistemaMatriculasApplication {
 
+	public static void main(String[] args) throws InterruptedException, KeeperException {
+
+		SpringApplication.run(SistemaMatriculasApplication.class, args);
+
+		Queue queue = new Queue("host.docker.internal", "/communication-queue");
+		System.out.println("queue created" + queue);
+
+		zk.getChildren("/communication-queue" , queue);
+
+		leaderElection(args);
+
+
+
+	}
     public static void main(String[] args) {
         SpringApplication.run(SistemaMatriculasApplication.class, args);
 

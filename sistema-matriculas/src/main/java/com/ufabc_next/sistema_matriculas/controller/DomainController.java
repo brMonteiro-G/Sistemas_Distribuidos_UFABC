@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection.*;
 import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
+//import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
 
 
 @RestController
@@ -17,14 +18,14 @@ public class DomainController {
         leaderElection(args);
     }
 
-        @PostMapping("/queue/{operation}")
-        public String produceMessagess(@PathVariable("operation") String operation, @RequestBody String message ) throws InterruptedException, KeeperException {
-               // produce(operation);
-                return processRequestMessage(operation, message);
-        }
-
-    @PostMapping("/lock")
-    public void lock(@RequestBody String[] args) {
-        Locks.exec(args);
+    @PostMapping("/queue/{operation}")
+    public String produceMessagess(@PathVariable("operation") String operation, @RequestBody String message ) throws InterruptedException, KeeperException {
+        // produce(operation);
+        return processRequestMessage(operation, message);
     }
+
+//    @PostMapping("/lock")
+//    public void lock(@RequestBody String[] args) {
+//        Locks.exec(args);
+//    }
 }

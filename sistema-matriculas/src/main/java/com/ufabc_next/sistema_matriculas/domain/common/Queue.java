@@ -49,7 +49,7 @@ public class Queue extends SyncPrimitive {
     public String produce(String message) throws KeeperException, InterruptedException {
 
 
-       // metodo
+        // metodo
         String leaderidentification = "/leader";
 
         Stat leaderStat = zk.exists(leaderidentification, false);
@@ -67,12 +67,13 @@ public class Queue extends SyncPrimitive {
 
             System.out.println("sou lider entao posso produzir");
             zk.create(root + "/element", message.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
+
             return "mensagem postada " + message;
         }else {
 
-                System.out.println("não sou lider entao não posso produzir");
+            System.out.println("não sou lider entao não posso produzir");
 
-                return "não sou lider entao não posso produzir";
+            return "não sou lider entao não posso produzir";
 
         }
 
@@ -96,7 +97,7 @@ public class Queue extends SyncPrimitive {
             synchronized (mutex) {
                 System.out.println("teste");
 
-                List<String> list = zk.getChildren(root, true);
+                List<String> list = zk.getChildren(this.root, this);
                 System.out.println("list " + list);
                 if (list.size() == 0) {
                     System.out.println("Going to wait");
@@ -128,6 +129,32 @@ public class Queue extends SyncPrimitive {
     }
 
 
+    synchronized public void process(WatchedEvent event) {
+        synchronized (mutex) {
+
+            System.out.println("event type for queue watcher " + event.getType());
+            System.out.println("event path for queue watcher " + event.getPath());
+
+            if (event.getType() == Event.EventType.NodeChildrenChanged) {
+
+                System.out.println("data changed on path for queue ");
+                try {
+                    zk.getChildren("/communication-queue", this);
+                } catch (KeeperException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+
+                try {
+
+                    System.out.println("success on queue message");
+
+                } catch (Exception e) {e.printStackTrace();}
+                mutex.notify();
+
+            }
+        }
+    }
 
 
 }

@@ -25,7 +25,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
 
   zookeeper2:
@@ -44,7 +44,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 2
-      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
 
   zookeeper3:
@@ -63,10 +63,31 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
 
     ## remove start app to test barrier feature
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
+
+  zookeeper4:
+      build:
+        context: .
+      container_name: zookeeper4
+      networks:
+        zknet:
+          ipv4_address: 172.28.0.15
+      ports:
+        - "2184:2181"
+        - "2891:2888"
+        - "3891:3888"
+        - "8084:8090"
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      environment:
+        ZOO_MY_ID: 3
+        ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
+
+      ## remove start app to test barrier feature
+      command: [ "sh", "-c", "./build_and_run.sh && sleep infinity" ]
 
   zk-cli:
     build:
@@ -77,15 +98,15 @@ services:
       zknet:
         ipv4_address: 172.28.0.14
     ports:
-      - "2184:2181"
-      - "2891:2888"
-      - "3891:3888"
-      - "8084:8090"
+      - "2185:2181"
+      - "2892:2888"
+      - "3892:3888"
+      - "8085:8090"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
       ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
+      ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
 
     ## removing start app to test barrier feature
     command: ["sh", "-c", "sleep infinity"]
@@ -93,4 +114,3 @@ services:
     depends_on:
       zookeeper3:
         condition: service_started
-
