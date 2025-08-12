@@ -24,7 +24,7 @@ public class SyncPrimitive implements Watcher {
                 mutex = Integer.valueOf(-1);
                 System.out.println("Finished starting ZK: " + zk);
             } catch (IOException e) {
-                System.out.println(e.toString());
+                System.out.println(e);
                 zk = null;
             }
         }
@@ -33,7 +33,7 @@ public class SyncPrimitive implements Watcher {
 
     synchronized public void process(WatchedEvent event) {
         synchronized (mutex) {
-            //System.out.println("Process: " + event.getType());
+            System.out.println("Process: " + event.getType());
             mutex.notify();
         }
     }

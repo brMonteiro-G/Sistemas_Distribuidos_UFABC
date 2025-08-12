@@ -9,23 +9,22 @@ import java.util.List;
 import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
 
 public class Leader extends SyncPrimitive {
-    String leader;
     static String id; //Id of the leader
+    String leader;
     String pathName;
 
     /**
      * Constructor of Leader
      *
      * @param address
-     * @param name Name of the election node
-     * @param leader Name of the leader node
-     *
+     * @param name    Name of the election node
+     * @param leader  Name of the leader node
      */
     public Leader(String address, String name, String leader, int id) {
         super(address);
         this.root = name;
         this.leader = leader;
-        this.id = Integer.valueOf(id).toString();
+        Leader.id = Integer.valueOf(id).toString();
         // Create ZK node name
         if (zk != null) {
             try {
@@ -38,71 +37,70 @@ public class Leader extends SyncPrimitive {
                 Stat s2 = zk.exists(leader, false);
                 if (s2 != null) {
                     byte[] idLeader = zk.getData(leader, false, s2);
-                    System.out.println("Current leader with id: "+new String(idLeader));
+                    System.out.println("Current leader with id: " + new String(idLeader));
                 }
 
             } catch (KeeperException e) {
-                System.out.println("Keeper exception when instantiating queue: " + e.toString());
+                System.out.println("Keeper exception when instantiating queue: " + e);
             } catch (InterruptedException e) {
                 System.out.println("Interrupted exception");
             }
         }
     }
 
-    public boolean elect() throws KeeperException, InterruptedException{
+    public boolean elect() throws KeeperException, InterruptedException {
         this.pathName = zk.create(root + "/n-", new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
-        System.out.println("My path name is: "+pathName+" and my id is: "+id+"!");
+        System.out.println("My path name is: " + pathName + " and my id is: " + id + "!");
         return check();
     }
 
-    boolean check() throws KeeperException, InterruptedException{
+    boolean check() throws KeeperException, InterruptedException {
         Integer suffix = Integer.valueOf(pathName.substring(12));
         while (true) {
             List<String> list = zk.getChildren(root, false);
             Integer min = Integer.valueOf(list.get(0).substring(5));
-            System.out.println("List: "+list.toString());
+            System.out.println("List: " + list);
             String minString = list.get(0);
-            for(String s : list){
+            for (String s : list) {
                 Integer tempValue = Integer.valueOf(s.substring(5));
                 //System.out.println("Temp value: " + tempValue);
-                if(tempValue < min)  {
+                if (tempValue < min) {
                     min = tempValue;
                     minString = s;
                 }
             }
-            System.out.println("Suffix: "+suffix+", min: "+min);
+            System.out.println("Suffix: " + suffix + ", min: " + min);
             if (suffix.equals(min)) {
                 this.leader();
                 return true;
             }
             Integer max = min;
             String maxString = minString;
-            for(String s : list){
+            for (String s : list) {
                 Integer tempValue = Integer.valueOf(s.substring(5));
                 //System.out.println("Temp value: " + tempValue);
-                if(tempValue > max && tempValue < suffix)  {
+                if (tempValue > max && tempValue < suffix) {
                     max = tempValue;
                     maxString = s;
                 }
             }
             //Exists with watch
-            Stat s = zk.exists(root+"/"+maxString, this);
-            System.out.println("Watching "+root+"/"+maxString);
+            Stat s = zk.exists(root + "/" + maxString, this);
+            System.out.println("Watching " + root + "/" + maxString);
             //Step 5
             if (s != null) {
                 //Wait for notification
                 break;
             }
         }
-        System.out.println(pathName+" is waiting for a notification!");
+        System.out.println(pathName + " is waiting for a notification!");
         return false;
 
     }
 
 
-
     void leader() throws KeeperException, InterruptedException {
-        System.out.println("Become a leader: "+id+"!");
+        System.out.println("Become a leader: " + id + "!");
         //Create leader znode
         Stat s2 = zk.exists(leader, false);
         if (s2 == null) {
@@ -116,8 +114,10 @@ public class Leader extends SyncPrimitive {
         System.out.println("I will die after 10 seconds!");
         try {
             processRequestMessage("producer", "hello world");
-            new Thread().sleep(60000);
-            System.out.println("Process "+id+" died!");
+            new Thread();
+            Thread.sleep(90_000);
+
+            System.out.println("Process " + id + " died!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeeperException e) {
@@ -146,7 +146,9 @@ public class Leader extends SyncPrimitive {
                     }
                     System.out.println("success on leader election");
 
-                } catch (Exception e) {e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

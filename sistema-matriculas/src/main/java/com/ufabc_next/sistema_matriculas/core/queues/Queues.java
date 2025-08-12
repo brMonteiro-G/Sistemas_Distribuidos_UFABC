@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive.mutex;
-import static com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive.zk;
-
 public class Queues implements Watcher {
 
 
@@ -27,11 +24,11 @@ public class Queues implements Watcher {
             System.out.println("fila executada por metodo producer");
 
             for (i = 0; i < batchSize; i++)
-                try{
+                try {
+                    q.produce("teste");
+                    Thread.sleep(10000);
                     return q.produce(message);
-
-                    //checkIfIsLeaderAndProduce();
-                } catch (KeeperException | InterruptedException e){
+                } catch (KeeperException | InterruptedException e) {
                     System.out.println("Deu erro " + e);
 
                     throw e;
@@ -45,13 +42,13 @@ public class Queues implements Watcher {
             List consumedMessages = new ArrayList();
 
             for (i = 0; i < batchConsumerSize; i++) {
-                try{
+                try {
                     String postedMessage = q.consume();
                     consumedMessages.add(postedMessage);
                     System.out.println("Item: " + postedMessage);
-                } catch (KeeperException e){
+                } catch (KeeperException e) {
                     i--;
-                } catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }

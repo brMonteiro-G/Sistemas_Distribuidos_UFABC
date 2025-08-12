@@ -4,6 +4,7 @@ import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
 import com.ufabc_next.sistema_matriculas.core.leaderElection.LeaderElection;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
 
@@ -40,11 +41,12 @@ public class Barrier extends SyncPrimitive {
 
     }
 
-    public boolean enter() throws KeeperException, InterruptedException {
+    public void enter() throws KeeperException, InterruptedException {
         zk.create(this.root + "/" + this.name, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
 
         while (true) {
             synchronized (mutex) {
+                System.out.println("Checking barrier with name: " + this.name + " in root: " + this.root);
                 List<String> root = zk.getChildren(this.root, true);
                 if (root.size() >= this.size) {
                     if (root.size() == this.size) {
@@ -54,18 +56,20 @@ public class Barrier extends SyncPrimitive {
                         System.out.println("Barrier reached with size: " + root.size() + ", starting leader election...");
                         String[] args = new String[0];
                         LeaderElection.leaderElection(args);
-                        // Notify all waiting threads that the barrier has been reached
+                        // Notify all waiting threads that the barrier has been reached and remove watchers
                         mutex.notifyAll();
+                        zk.removeAllWatches(this.root, Watcher.WatcherType.Any, false);
                     }
-                    return true;
+                    return;
                 }
-
                 mutex.wait();
             }
         }
     }
 
     public void leave() throws KeeperException, InterruptedException {
+        System.out.println("Removing node: " + this.root + "/" + this.name);
+        // Remove the node from Zookeeper
         zk.delete(this.root + "/" + this.name, 0);
 
         while (true) {
@@ -74,7 +78,6 @@ public class Barrier extends SyncPrimitive {
                 if (root.isEmpty()) {
                     return;
                 }
-
                 mutex.wait();
             }
         }

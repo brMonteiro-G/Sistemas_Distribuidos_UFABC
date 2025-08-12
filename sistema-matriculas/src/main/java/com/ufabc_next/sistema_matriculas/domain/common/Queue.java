@@ -1,12 +1,15 @@
 package com.ufabc_next.sistema_matriculas.domain.common;
 
 import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,7 +35,7 @@ public class Queue extends SyncPrimitive {
                     zk.create(root, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 }
             } catch (KeeperException e) {
-                System.out.println("Keeper exception when instantiating queue: " + e.toString());
+                System.out.println("Keeper exception when instantiating queue: " + e);
             } catch (InterruptedException e) {
                 System.out.println("Interrupted exception");
             }
@@ -42,12 +45,11 @@ public class Queue extends SyncPrimitive {
     /**
      * Add element to the queue.
      *
-     * @param i
+     * @param message
      * @return
      */
 
     public String produce(String message) throws KeeperException, InterruptedException {
-
 
         // metodo
         String leaderidentification = "/leader";
@@ -65,11 +67,10 @@ public class Queue extends SyncPrimitive {
         if (leaderId.equals(Leader.id)) {
             // Eu sou o líder
 
-            System.out.println("sou lider entao posso produzir");
+            System.out.println("Leader producing message: " + message);
             zk.create(root + "/element", message.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
-
             return "mensagem postada " + message;
-        }else {
+        } else {
 
             System.out.println("não sou lider entao não posso produzir");
 
@@ -91,25 +92,23 @@ public class Queue extends SyncPrimitive {
         int retvalue = -1;
         Stat stat = null;
 
-
+        System.out.println("Starting consume method");
         // Get the first element available
         while (true) {
             synchronized (mutex) {
-                System.out.println("teste");
-
-                List<String> list = zk.getChildren(this.root, this);
+                List<String> list = zk.getChildren("/communication-queue", this);
                 System.out.println("list " + list);
-                if (list.size() == 0) {
+                if (list.isEmpty()) {
                     System.out.println("Going to wait");
                     mutex.wait();
                 } else {
-                    System.out.println("teste-2");
-                    Integer min = Integer.valueOf(list.get(0).substring(7));
-                    System.out.println("List: " + list.toString());
+                    System.out.println("List is not empty, processing...");
+                    int min = Integer.parseInt(list.get(0).substring(7));
+                    System.out.println("List: " + list);
                     String minString = list.get(0);
                     for (String s : list) {
-                        Integer tempValue = Integer.valueOf(s.substring(7));
-                        //System.out.println("Temp value: " + tempValue);
+                        int tempValue = Integer.parseInt(s.substring(7));
+                        System.out.println("Temp value: " + tempValue);
                         if (tempValue < min) {
                             min = tempValue;
                             minString = s;
@@ -117,8 +116,8 @@ public class Queue extends SyncPrimitive {
                     }
                     System.out.println("Temporary value: " + root + "/" + minString);
                     byte[] b = zk.getData(root + "/" + minString, false, stat);
-                    //System.out.println("b: " + Arrays.toString(b));
-                    zk.delete(root + "/" + minString, 0);
+                    System.out.println("b: " + Arrays.toString(b));
+//                    zk.delete(root + "/" + minString, 0);
                     ByteBuffer buffer = ByteBuffer.wrap(b);
                     retvalue = buffer.getChar();
                     return String.valueOf(retvalue);
@@ -131,30 +130,23 @@ public class Queue extends SyncPrimitive {
 
     synchronized public void process(WatchedEvent event) {
         synchronized (mutex) {
-
-            System.out.println("event type for queue watcher " + event.getType());
-            System.out.println("event path for queue watcher " + event.getPath());
-
-            if (event.getType() == Event.EventType.NodeChildrenChanged) {
-
-                System.out.println("data changed on path for queue ");
+            if (event.getType() == Event.EventType.NodeChildrenChanged && event.getPath().equals("/communication-queue")) {
+                System.out.println("Event received: " + event.getType() + " on path: " + event.getPath());
                 try {
+                    List<String> children = zk.getChildren("/communication-queue", this);
+                    for (String child : children) {
+                        byte[] data = zk.getData("/communication-queue/" + child, false, null);
+                        String message = new String(data, StandardCharsets.UTF_8);
+                        System.out.println("Mensagem recebida: " + message);
+                    }
+                    // colocando o watcher para esperar por novos eventos
                     zk.getChildren("/communication-queue", this);
                 } catch (KeeperException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-
-
-                try {
-
-                    System.out.println("success on queue message");
-
-                } catch (Exception e) {e.printStackTrace();}
-                mutex.notify();
-
+                System.out.println("Notifying all waiting threads");
+                mutex.notifyAll();
             }
         }
     }
-
-
 }

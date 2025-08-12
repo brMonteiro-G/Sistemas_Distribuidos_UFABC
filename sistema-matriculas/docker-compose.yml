@@ -1,5 +1,3 @@
-version: '3.8'
-
 networks:
   zknet:
     driver: bridge
@@ -11,7 +9,6 @@ services:
   zookeeper1:
     build:
       context: .
-    hostname: zookeeper1
     container_name: zookeeper1
     networks:
       zknet:
@@ -26,7 +23,7 @@ services:
     environment:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
-    command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
+    command: [ "sh", "-c", "./build_and_run.sh && sleep infinity" ]
 
   zookeeper2:
     build:
@@ -45,7 +42,7 @@ services:
     environment:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
-    command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
+    command: [ "sh", "-c", "./build_and_run.sh && sleep infinity" ]
 
   zookeeper3:
     build:
@@ -66,28 +63,7 @@ services:
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
 
     ## remove start app to test barrier feature
-    command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
-
-  zookeeper4:
-      build:
-        context: .
-      container_name: zookeeper4
-      networks:
-        zknet:
-          ipv4_address: 172.28.0.15
-      ports:
-        - "2184:2181"
-        - "2891:2888"
-        - "3891:3888"
-        - "8084:8090"
-      extra_hosts:
-        - "host.docker.internal:host-gateway"
-      environment:
-        ZOO_MY_ID: 3
-        ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
-
-      ## remove start app to test barrier feature
-      command: [ "sh", "-c", "./build_and_run.sh && sleep infinity" ]
+    command: [ "sh", "-c", "./build_and_run.sh && sleep infinity" ]
 
   zk-cli:
     build:
@@ -109,7 +85,7 @@ services:
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888 server.4=172.28.0.15
 
     ## removing start app to test barrier feature
-    command: ["sh", "-c", "sleep infinity"]
+    command: [ "sh", "-c", "sleep infinity" ]
 
     depends_on:
       zookeeper3:
