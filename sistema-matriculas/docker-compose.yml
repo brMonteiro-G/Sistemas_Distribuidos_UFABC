@@ -11,6 +11,11 @@ services:
   zookeeper1:
     build:
       context: .
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8090/domain/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     hostname: zookeeper1
     container_name: zookeeper1
     networks:
@@ -28,9 +33,15 @@ services:
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
 
+
   zookeeper2:
     build:
       context: .
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8090/domain/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     container_name: zookeeper2
     networks:
       zknet:
@@ -46,10 +57,18 @@ services:
       ZOO_MY_ID: 2
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
+    depends_on:
+      zookeeper1:
+        condition: service_healthy
 
   zookeeper3:
     build:
       context: .
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8090/domain/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     container_name: zookeeper3
     networks:
       zknet:
@@ -67,6 +86,9 @@ services:
 
     ## remove start app to test barrier feature
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
+    depends_on:
+      zookeeper1:
+        condition: service_healthy
 
 
   zk-cli:

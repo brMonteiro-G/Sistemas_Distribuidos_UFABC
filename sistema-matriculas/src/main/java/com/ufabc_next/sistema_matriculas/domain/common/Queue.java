@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.ufabc_next.sistema_matriculas.domain.common.Leader.isLeader;
+
 /**
  * Producer-Consumer queue
  */
@@ -143,12 +145,25 @@ public class Queue extends SyncPrimitive {
                 try {
                     List<String> children =  zk.getChildren("/communication-queue", this);
 
+
                     for (String child : children) {
-                        byte[] data = zk.getData("/communication-queue/" + child, false, null);
-                        System.out.println("data " + Arrays.toString(data));
-                        String message = new String(data, StandardCharsets.UTF_8);
-                        System.out.println("Mensagem recebida: " + message);
+
+                        if (child.contains("element")){
+                            System.out.println("child: " + child);
+                            byte[] data = zk.getData("/communication-queue/" + child, false, null);
+                            System.out.println("data " + Arrays.toString(data));
+                            String message = new String(data, StandardCharsets.UTF_8);
+                            System.out.println("Mensagem recebida: " + message);
+
+                        if(isLeader())    {
+                            System.out.println("iniciando deleção");
+
+                            zk.delete(root + "/" + child, 0);
+                        }
+                        }
                     }
+
+
 
 
                 } catch (KeeperException | InterruptedException e) {

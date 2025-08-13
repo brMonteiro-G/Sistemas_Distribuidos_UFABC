@@ -4,6 +4,7 @@ import com.ufabc_next.sistema_matriculas.core.config.SyncPrimitive;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static com.ufabc_next.sistema_matriculas.core.queues.Queues.processRequestMessage;
@@ -116,16 +117,29 @@ public class Leader extends SyncPrimitive {
         System.out.println("I will die after 10 seconds!");
         try {
             processRequestMessage("producer", "hello world");
-            new Thread().sleep(90000);
+          //  new Thread().sleep(180_000);
             System.out.println("Process "+id+" died!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeeperException e) {
             throw new RuntimeException(e);
         }
-        System.exit(0);
+        //System.exit(0);
     }
 
+    public static boolean isLeader() throws InterruptedException, KeeperException {
+        // metodo
+        String leaderidentification = "/leader";
+
+        Stat leaderStat = zk.exists(leaderidentification, false);
+
+        // Já existe líder → pega o ID
+        byte[] leaderData = zk.getData(leaderidentification, false, leaderStat);
+        String leaderId = new String(leaderData, StandardCharsets.UTF_8);
+
+        // metodo
+        return leaderId.equals(Leader.id);
+    }
 
     synchronized public void process(WatchedEvent event) {
         synchronized (mutex) {

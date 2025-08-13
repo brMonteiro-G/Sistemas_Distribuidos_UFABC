@@ -33,6 +33,12 @@ public class DomainController {
         return result;
     }
 
+    @GetMapping("/health")
+    public String health() throws InterruptedException, KeeperException {
+
+return "alive";
+    }
+
 //    @PostMapping("/lock")
 //    public void lock(@RequestBody String[] args) {
 //        Locks.exec(args);

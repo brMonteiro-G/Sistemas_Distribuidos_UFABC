@@ -28,8 +28,7 @@ public class SistemaMatriculasApplication {
 		Barrier barrier = new Barrier("host.docker.internal:2181", "/barrier");
 		barrier.enter();
 
-		System.out.println("Entered barrier");
-
+		System.out.println("fim do processamento");
 
 
 	}
