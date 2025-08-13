@@ -50,10 +50,8 @@ public class Barrier extends SyncPrimitive {
                 List<String> root = zk.getChildren(this.root, true);
                 if (root.size() >= this.size) {
                     if (root.size() == this.size) {
-                        // Logging the barrier nodes
-                        System.out.println("Barrier reached with nodes: " + root);
                         //Logging the barrier reached and de starting leader election
-                        System.out.println("Barrier reached with size: " + root.size() + ", starting leader election...");
+                        System.out.println("Sistema de matriculas inciado com : " + root.size() + " requisitantes " );
                         String[] args = new String[0];
                         LeaderElection.leaderElection(args);
                         // Notify all waiting threads that the barrier has been reached and remove watchers

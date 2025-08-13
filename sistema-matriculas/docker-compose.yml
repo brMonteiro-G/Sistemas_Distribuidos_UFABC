@@ -33,7 +33,6 @@ services:
       ZOO_SERVERS: server.1=172.28.0.11:2888:3888 server.2=172.28.0.12:2888:3888 server.3=172.28.0.13:2888:3888
     command: ["sh", "-c", "./build_and_run.sh && sleep infinity"]
 
-
   zookeeper2:
     build:
       context: .

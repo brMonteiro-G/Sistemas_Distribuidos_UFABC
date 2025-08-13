@@ -17,7 +17,7 @@ public class Queues implements Watcher {
 
 
     public static String processRequestMessage(String operation, String message) throws InterruptedException, KeeperException {
-        Queue q = new Queue("host.docker.internal", "/communication-queue");
+        Queue q = new Queue("host.docker.internal", "/sistemas-distribuidos");
         System.out.println("Iniciando execução da fila");
 
         int i;
@@ -26,7 +26,7 @@ public class Queues implements Watcher {
         if (Objects.equals(operation, "producer")) {
             System.out.println("fila executada por metodo producer");
             // Create Lock instance
-            var lock = new Lock("host.docker.internal", "/communication-queue");
+            var lock = new Lock("host.docker.internal", "/sistemas-distribuidos");
 
             for (i = 0; i < batchSize; i++) {
                 try {

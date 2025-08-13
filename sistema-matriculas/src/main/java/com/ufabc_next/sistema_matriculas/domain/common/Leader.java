@@ -114,11 +114,9 @@ public class Leader extends SyncPrimitive {
     }
 
     public void compute() {
-        System.out.println("I will die after 10 seconds!");
         try {
-            processRequestMessage("producer", "hello world");
+            processRequestMessage("producer", "[ACK] iniciando sistema de matrículas");
           //  new Thread().sleep(180_000);
-            System.out.println("Process "+id+" died!");
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (KeeperException e) {

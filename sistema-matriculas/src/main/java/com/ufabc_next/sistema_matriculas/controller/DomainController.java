@@ -25,7 +25,7 @@ public class DomainController {
 
     @PostMapping("/lock")
     public boolean lockStuff(@RequestBody String message) throws InterruptedException, KeeperException {
-        Lock lock = new Lock("host.docker.internal", "/communication-queue");
+        Lock lock = new Lock("host.docker.internal", "/sistemas-distribuidos");
         var result =  lock.lock(message, 10);
 
         System.out.println("result" + result);

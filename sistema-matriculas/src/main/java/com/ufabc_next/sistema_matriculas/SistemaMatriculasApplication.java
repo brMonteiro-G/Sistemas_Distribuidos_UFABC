@@ -19,10 +19,10 @@ public class SistemaMatriculasApplication {
 
 		SpringApplication.run(SistemaMatriculasApplication.class, args);
 
-		Queue queue = new Queue("host.docker.internal", "/communication-queue");
+		Queue queue = new Queue("host.docker.internal", "/sistemas-distribuidos");
 		System.out.println("queue created" + queue);
 
-		zk.getChildren("/communication-queue" , queue);
+		zk.getChildren("/sistemas-distribuidos" , queue);
 
 
 		Barrier barrier = new Barrier("host.docker.internal:2181", "/barrier");

@@ -69,13 +69,13 @@ public class Queue extends SyncPrimitive {
         if (leaderId.equals(Leader.id)) {
             // Eu sou o líder
 
-            System.out.println("sou lider entao posso produzir");
+            System.out.println("Apenas o lider pode produzir, e eu sou o lider");
             zk.create(root + "/element", message.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT_SEQUENTIAL);
 
             return "mensagem postada " + message;
         }else {
 
-            System.out.println("não sou lider entao não posso produzir");
+            System.out.println("Nao sou lider, entao não posso produzir");
 
             return "não sou lider entao não posso produzir";
 
@@ -139,27 +139,26 @@ public class Queue extends SyncPrimitive {
             System.out.println("event type for queue watcher " + event.getType());
             System.out.println("event path for queue watcher " + event.getPath());
 
-            if (event.getType() == Event.EventType.NodeChildrenChanged && event.getPath().equals("/communication-queue")) {
+            if (event.getType() == Event.EventType.NodeChildrenChanged && event.getPath().equals("/sistemas-distribuidos")) {
 
                 System.out.println("data changed on path for queue " + event.getPath());
                 try {
-                    List<String> children =  zk.getChildren("/communication-queue", this);
+                    List<String> children =  zk.getChildren("/sistemas-distribuidos", this);
 
+                    for (int i = 0; i < children.size(); i++) {
+                        String child = children.get(i);
 
-                    for (String child : children) {
-
-                        if (child.contains("element")){
-                            System.out.println("child: " + child);
-                            byte[] data = zk.getData("/communication-queue/" + child, false, null);
+                        if (child.contains("element")) {
+                            System.out.println("child: " + child + "posicao " + i);
+                            byte[] data = zk.getData("/sistemas-distribuidos/" + child, false, null);
                             System.out.println("data " + Arrays.toString(data));
                             String message = new String(data, StandardCharsets.UTF_8);
                             System.out.println("Mensagem recebida: " + message);
 
-                        if(isLeader())    {
-                            System.out.println("iniciando deleção");
-
-                            zk.delete(root + "/" + child, 0);
-                        }
+                            if (isLeader()) {
+                                System.out.println("iniciando deleção");
+                                zk.delete(root + "/" + child, 0);
+                            }
                         }
                     }
 

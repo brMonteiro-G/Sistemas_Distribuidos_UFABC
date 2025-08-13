@@ -27,6 +27,7 @@ public class LeaderElection implements Watcher {
         try{
             boolean success = leader.elect();
             if (success) {
+                System.out.println("Iniciando matriculas com o líder");
                 leader.compute();
             } else {
 
